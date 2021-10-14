@@ -90,18 +90,13 @@ content:
         caption: 2017 - 2020
         sub_title: Bachelor in Mathematical Engineering
         description: | # this will include new lines to allow paragraphs
-          During my time at Harvard I learnt most of my key skills that have I have taken through my career such as teamwork and working to tight deadlines. I thouroughly enjoyed my time as university and learnt a lot about a healthy work life balance.
-
-          I spent a lot of my free time as a committee member of the *Harvard Mountaineering Club* taking on roles such as *Trip Secretary* and *Vice-President*.
+          At Polimi I got in touch with the bautiful world of mathematics. I learned a lot of theorems from all over mathematics, but, even more important, I learn hot to come up with extensive and original proofs. I also learned how to apply all of this knowledge in practical problems: from applied statistics to PDE's numerical calculus.
       - layout: left
         title: ETHz
         caption: 2020 - 2022
         sub_title: Master in Data Science
         description: | # this will include new lines to allow paragraphs
-          During my time at Harvard I learnt most of my key skills that have I have taken through my career such as teamwork and working to tight deadlines. I thouroughly enjoyed my time as university and learnt a lot about a healthy work life balance.
-
-          I spent a lot of my free time as a committee member of the *Harvard Mountaineering Club* taking on roles such as *Trip Secretary* and *Vice-President*.
-
+          In this master I am diggining into the world of machine learning. Starting from the theory behind, all the way to real world imlementations.
   - title: A Little More About Me
     layout: text
     content: | # this will include new lines to allow paragraphs
@@ -111,7 +106,7 @@ content:
       - Going on holydays
 
 # Footer
-footer_show_references: true
+footer_show_references: false
 # references_title: References on request (Override references text)
 
 # Build settings
