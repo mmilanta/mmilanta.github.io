@@ -79,9 +79,8 @@ content:
         sub_title: Senior Network System Administrator
         caption: September 2020 - December 2020
         #quote: >
-        #  Solving 21st century problems by diging holes and making game changing products like the *not a flamethrower*
         description: | # this will include new lines to allow paragraphs
-            I am working as a TA for [Probabilistic Artifical Intelligence](https://las.inf.ethz.ch/teaching/pai-f21), a class held by Andreas Krause at ETHz. My job is mostly behind the scenes, I prepare homework sheets and slides, but I also hold some tutorials.
+            I am working as a TA for [Probabilistic Artificial Intelligence](https://las.inf.ethz.ch/teaching/pai-f21), a class held by Andreas Krause at ETHz. My job is mostly behind the scenes, I prepare homework sheets and slides, but I also hold some tutorials.
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
     content:
@@ -90,20 +89,20 @@ content:
         caption: 2017 - 2020
         sub_title: Bachelor in Mathematical Engineering
         description: | # this will include new lines to allow paragraphs
-          At Polimi I got in touch with the bautiful world of mathematics. I learned a lot of theorems from all over mathematics, but, even more important, I learn hot to come up with extensive and original proofs. I also learned how to apply all of this knowledge in practical problems: from applied statistics to PDE's numerical calculus.
+          At Polimi I got in touch with the beautiful world of mathematics. I learned a lot of theorems from all over mathematics, but, even more important, I learn how to come up with extensive and original proofs. I also learned how to apply all of this knowledge in practical problems: from applied statistics to PDE's numerical calculus.
       - layout: left
         title: ETHz
         caption: 2020 - 2022
         sub_title: Master in Data Science
         description: | # this will include new lines to allow paragraphs
-          In this master I am diggining into the world of machine learning. Starting from the theory behind, all the way to real world imlementations.
+          In this master I am digging into the world of machine learning. Starting from the theory behind, all the way to real-world implementations.
   - title: A Little More About Me
     layout: text
     content: | # this will include new lines to allow paragraphs
       Alongside my interests in mathematics and machine learning some of my other interests and hobbies are:
       - Rock climbing
-      - Cooking ([Here](https://mmilanta.github.io/le_ricette_di_nonna_aua/) a website with my Grandma's recieps, but it's all in italian)
-      - Going on holydays
+      - Cooking ([Here](https://mmilanta.github.io/le_ricette_di_nonna_aua/) a website with my Grandma's recipes, but they are all in Italian)
+      - Going on holidays
 
 # Footer
 footer_show_references: false
