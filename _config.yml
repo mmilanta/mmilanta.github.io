@@ -22,7 +22,7 @@ github_username:  mmilanta
 # facebook_username: jekyll
 # flickr_username: jekyll
 #instagram_username: jameswgrant
-linkedin_username: marco-milanta-2a1271196
+linkedin_username: marco-milanta
 # xing_username: jekyll
 # pinterest_username: jekyll
 # youtube_username: globalmtb
@@ -73,14 +73,21 @@ content:
     layout: list # Type of content section (list/text)
     content:
       - layout: left
+        title: Research Assistant
+        link: ethz.ch
+        # link_text: boringcompany.com
+        caption: Spring 2022
+        #quote: >
+        description: | # this will include new lines to allow paragraphs
+            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎. The code is already available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting), and a pubblication is coming soon.
+      - layout: left
         title: Teaching Assistant
         link: ethz.ch
         # link_text: boringcompany.com
-        sub_title: Senior Network System Administrator
-        caption: September 2020 - December 2020
+        caption: Autumn 2021
         #quote: >
         description: | # this will include new lines to allow paragraphs
-            I am working as a TA for [Probabilistic Artificial Intelligence](https://las.inf.ethz.ch/teaching/pai-f21), a class held by Andreas Krause at ETHz. My job is mostly behind the scenes, I prepare homework sheets and slides, but I also hold some tutorials.
+            I have worked as a TA for [Probabilistic Artificial Intelligence](https://las.inf.ethz.ch/teaching/pai-f21), a class held by Andreas Krause at ETHz. I also held some tutorials and worked behind the scenes to prepare homeworks and slides.
   - title: Education # Title for the section
     layout: list # Type of content section (list/text)
     content:
