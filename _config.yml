@@ -79,7 +79,7 @@ content:
         caption: Spring 2022
         #quote: >
         description: | # this will include new lines to allow paragraphs
-            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎. The code is already available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting), and a publication is coming soon.
+            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎. A preprint is can be found [here](https://www.biorxiv.org/content/10.1101/2022.08.16.504173), and the code is available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting).
       - layout: left
         title: Teaching Assistant
         link: ethz.ch
