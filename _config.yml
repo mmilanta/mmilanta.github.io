@@ -119,7 +119,7 @@ content:
         title: Strong inductive biases provably prevent harmless interpolation
         caption: Published at ICLR 2023
         description: | # this will include new lines to allow paragraphs
-          Counterintutivly, many very large models perform well even when they interpolate the training data. However, there are still many exceptions in which this phenomenon fails. We investigates how inductive bias plays a crucial role.
+          Counterintutivly, many very large models perform well even when they interpolate the training data. However, there are still many exceptions in which this phenomenon fails. We investigates how inductive bias plays a crucial role. Paper available [here](https://arxiv.org/abs/2301.07605).
       - layout: left
         title: Deep learning for satellite image forecasting of vegetation greenness
         caption: In review at Environmental Data Science, Cambridge 
