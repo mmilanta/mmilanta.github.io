@@ -46,9 +46,9 @@ linkedin_username: marco-milanta
 
 # About Section
 # about_title: About Me
-about_profile_image: images/profile.png
+about_profile_image: images/profile.jpeg
 about_content: | # this will include new lines to allow paragraphs
-  Creative and passionate student. Combines great <mark>mathematics skills</mark>  with a good expertise in <mark>programming</mark>. He is eager to focus on hard problems working well in a team with other students.
+  Creative and passionate Machine Learning Engineer. Confortable with <mark>mathematics</mark> and <mark>programming</mark>. He is eager to focus on hard problems working well in a team.
 content:
 #  - title: Projects # Title for the section
 #    layout: list # Type of content section (list/text)
@@ -73,13 +73,21 @@ content:
     layout: list # Type of content section (list/text)
     content:
       - layout: left
+        title: NLP Research Engineer
+        link: caplena.com
+        # link_text: boringcompany.com
+        caption: Spring 2023
+        #quote: >
+        description: | # this will include new lines to allow paragraphs
+            Working on an NLP startup focusing on sentiment analysis. First hand experience with large lenguage models. 
+      - layout: left
         title: Research Assistant
         link: ethz.ch
         # link_text: boringcompany.com
         caption: Spring 2022
         #quote: >
         description: | # this will include new lines to allow paragraphs
-            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎. A preprint is can be found [here](https://www.biorxiv.org/content/10.1101/2022.08.16.504173), and the code is available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting).
+            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎.
       - layout: left
         title: Teaching Assistant
         link: ethz.ch
@@ -102,7 +110,21 @@ content:
         caption: 2020 - 2022
         sub_title: Master in Data Science
         description: | # this will include new lines to allow paragraphs
-          In this master, I am digging into the world of machine learning. Starting from theory, all the way to real-world implementations.
+          In this master, I dived into the world of machine learning. Starting from theory, all the way to real-world implementations.
+  
+  - title: Publications # Title for the section
+    layout: list # Type of content section (list/text)
+    content:
+      - layout: left
+        title: Strong inductive biases provably prevent harmless interpolation
+        caption: Published at ICLR 2023
+        description: | # this will include new lines to allow paragraphs
+          Counterintutivly, many very large models perform well even when they interpolate the training data. However, there are still many exceptions in which this phenomenon fails. We investigates how inductive bias plays a crucial role.
+      - layout: left
+        title: Deep learning for satellite image forecasting of vegetation greenness
+        caption: In review at Environmental Data Science, Cambridge 
+        description: | # this will include new lines to allow paragraphs
+          We worked on a deep learning model to forecast how satellite images in a fixed location evolve through time, conditioned on weather data. We implemented a convolutional version of s LSTM network to encode prior knowladge of both temporal and spatial dependencies. The preprint is can be found [here](https://www.biorxiv.org/content/10.1101/2022.08.16.504173), code is available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting).
   - title: A Little More About Me
     layout: text
     content: | # this will include new lines to allow paragraphs
