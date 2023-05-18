@@ -48,7 +48,7 @@ linkedin_username: marco-milanta
 # about_title: About Me
 about_profile_image: images/caplena-marco-milanta-0676-media-.JPG
 about_content: | # this will include new lines to allow paragraphs
-  Creative and passionate Machine Learning Engineer. Confortable with <mark>mathematics</mark> and <mark>programming</mark>. He is eager to focus on hard problems working well in a team.
+  Creative and passionate Machine Learning Engineer. Comfortable with <mark>mathematics</mark> and <mark>programming</mark>. He is eager to focus on hard problems working well in a team.
 content:
 #  - title: Projects # Title for the section
 #    layout: list # Type of content section (list/text)
@@ -79,7 +79,7 @@ content:
         caption: Spring 2023
         #quote: >
         description: | # this will include new lines to allow paragraphs
-            Working on an NLP startup focusing on sentiment analysis. First hand experience with large lenguage models. 
+            Working on an NLP startup focusing on sentiment analysis. First hand experience with large language models. 
       - layout: left
         title: Research Assistant
         link: ethz.ch
@@ -87,7 +87,7 @@ content:
         caption: Spring 2022
         #quote: >
         description: | # this will include new lines to allow paragraphs
-            I am working to complete a project that uses deep learning techniques to forecast the effect of droughts 🌎.
+            Worked on deep learning techniques to forecast the effect of droughts 🌎.
       - layout: left
         title: Teaching Assistant
         link: ethz.ch
@@ -104,13 +104,13 @@ content:
         caption: 2017 - 2020
         sub_title: Bachelor in Mathematical Engineering
         description: | # this will include new lines to allow paragraphs
-          At Polimi I got in touch with the beautiful world of mathematics. I learned a lot of theorems from all over mathematics, but, even more important, I learned how to come up with extensive and original proofs. I also learned how to apply all of this knowledge in practical problems: from applied statistics to PDE's numerical calculus.
+          At Polimi I got in touch with the beautiful world of mathematics. I learned a lot of theorems from all over mathematics, but, even more important, I learned how to come up with extensive and original proofs. I also learned how to apply all of this knowledge to practical problems: from applied statistics to PDE's numerical calculus.
       - layout: left
         title: ETHz
         caption: 2020 - 2022
         sub_title: Master in Data Science
         description: | # this will include new lines to allow paragraphs
-          In this master, I dived into the world of machine learning. Starting from theory, all the way to real-world implementations.
+          In this Master's, I dived into the world of machine learning. Starting from theory, all the way to real-world implementation.
   
   - title: Publications # Title for the section
     layout: list # Type of content section (list/text)
@@ -119,12 +119,12 @@ content:
         title: Strong inductive biases provably prevent harmless interpolation
         caption: Published at ICLR 2023
         description: | # this will include new lines to allow paragraphs
-          Counterintutivly, many very large models perform well even when they interpolate the training data. However, there are still many exceptions in which this phenomenon fails. We investigates how inductive bias plays a crucial role. Paper available [here](https://arxiv.org/abs/2301.07605).
+          Counterintutively, many very large models perform well even when they interpolate the training data. However, there are still many exceptions in which this phenomenon fails. We investigate how inductive bias plays a crucial role. Paper available [here](https://arxiv.org/abs/2301.07605).
       - layout: left
         title: Deep learning for satellite image forecasting of vegetation greenness
         caption: In review at Environmental Data Science, Cambridge 
         description: | # this will include new lines to allow paragraphs
-          We worked on a deep learning model to forecast how satellite images in a fixed location evolve through time, conditioned on weather data. We implemented a convolutional version of s LSTM network to encode prior knowladge of both temporal and spatial dependencies. The preprint is can be found [here](https://www.biorxiv.org/content/10.1101/2022.08.16.504173), code is available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting).
+          We worked on a deep learning model to forecast how satellite images in a fixed location evolve through time, conditioned on weather data. We implemented a convolutional version of s LSTM network to encode prior knowledge of both temporal and spatial dependencies. The preprint available [here](https://www.biorxiv.org/content/10.1101/2022.08.16.504173), code is available in [this repo](github.com/rudolfwilliam/satellite_image_forecasting).
   - title: A Little More About Me
     layout: text
     content: | # this will include new lines to allow paragraphs
