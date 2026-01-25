@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/src/styles.css" rel="stylesheet">
+
+  <title>Optimal Tennis Match</title>
+
+  <!-- MathJax: render the LaTeX in this article -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <div class="min-h-screen flex justify-center">
+    <div class="m-10 max-w-4xl">
+      <div class="flex flex-row items-baseline justify-between gap-6 mb-6">
+        <h1 class="font-serif text-5xl">Optimal Tennis Match</h1>
+        <nav class="flex flex-row gap-4 font-serif text-sm">
+          <a class="underline hover:no-underline" href="../">Home</a>
+        </nav>
+      </div>
+
+      <article class="font-serif text-lg leading-relaxed space-y-6">
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The Paradox of Federer&apos;s Success</h2>
+          <p>
+            Roger Federer, one of the most successful tennis players in history, once mentioned in a speech that he won
+            only about <strong>54% of the points</strong> he played. This statement appears paradoxical—how can a player
+            with such a slim margin of superiority dominate the sport? The answer lies in the
+            <strong>amplification effect</strong> of match structure, where small advantages compound to create
+            significant outcomes.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Example of a 2-point tiebreaker</h2>
+          <p>
+            Let&apos;s make a concrete example. Alex is playing against Bob, and Alex has a probability $p$ of beating Bob
+            in a single point. $p = 0.5$ would mean that Alex is just as strong as Bob, $p &gt; 0.5$ that Alex is
+            stronger.
+          </p>
+          <p>
+            Now we look at a 2-point tiebreaker (which we indicate as $T_2$). I.e. the first player to win two points
+            wins the match. We are interested in the probability of Alex to win this $T_2$. For Alex to win, one of the
+            following must happen:
+          </p>
+          <ul class="list-disc list-outside ml-6 space-y-1">
+            <li>Alex wins the first two points: probability $p^2$.</li>
+            <li>Alex wins the first point, loses the second, but wins the third: probability $p(1-p)p$.</li>
+            <li>Alex loses the first point, but wins the second and third: probability $(1-p)p^2$.</li>
+          </ul>
+          <p>So overall, we have that</p>
+          <p>
+            $$\mathbf{P}(p, T_2) = p^2 + p(1-p)p + (1-p)p^2 = 3p^2 - 2p^3.$$
+          </p>
+          <p>
+            where we define $\mathbf{P}(p, T_2)$ to be the probability of Alex to win $T_2$. Plugging in $p=0.54$ like
+            in Federer's case, for a 2-point tiebreaker, we get $\mathbf{P}(0.54, T_2) = 0.559872$. Being the match very
+            short, the amplification is rather small: circa $2\%$. But for longer matches, we can expect to amplify it
+            much more.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">N-point tiebreaker</h2>
+          <p>
+            From here, it is natural to go beyond $T_2$, and to start looking at longer tiebreakers. Unfortunately, the math becomes very quickly complex; for this reason, I made a
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>
+            that allows us to compute $\mathbf{P}(p, T)$ for any arbitrary match structure $T$.
+          </p>
+        </section>
+        <div class="flex justify-center">
+          <div class="flex flex-col items-center gap-6 max-w-full">
+            <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 w-full">
+              <div id="tiebreaker_plot_container" class="relative w-[400px] max-w-full aspect-square mb-2">
+                <canvas id="tiebreaker_plot" class="absolute inset-0 w-full h-full"></canvas>
+                <div
+                  id="tiebreaker_y_label"
+                  class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none"
+                ></div>
+                <div
+                  id="tiebreaker_x_label"
+                  class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none"
+                ></div>
+              </div>
+
+              <div id="tiebreaker_plot_container_right" class="relative w-[400px] max-w-full aspect-square mb-2">
+                <canvas id="tiebreaker_plot_right" class="absolute inset-0 w-full h-full"></canvas>
+                <div
+                  id="tiebreaker_y_label_right"
+                  class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none"
+                ></div>
+                <div
+                  id="tiebreaker_x_label_right"
+                  class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none"
+                ></div>
+              </div>
+            </div>
+
+            <div class="w-full max-w-[440px] flex flex-row items-center gap-3">
+              <label for="tiebreaker_n" class="font-serif text-sm shrink-0">
+                <span class="italic text-lg">T</span><sub id="tiebreaker_n_value" class="font-mono">2</sub>
+              </label>
+              <input
+                id="tiebreaker_n"
+                class="w-full"
+                type="range"
+                min="2"
+                max="11"
+                step="1"
+                value="2"
+              />
+            </div>
+            <p class="text-center font-serif text-[15px] mt-2">
+              <strong>Figure 1.</strong> Probability $\mathbf{P}(p, T)$ on the left and expected length $\mathbf{E}(p, T)$ on the right for N-point tiebreakers.
+            </p>
+          </div>
+        </div>
+        <section class="space-y-3">
+          <p>In the plot in Figure 1 we can see how $\mathbf{P}(T; p)$ follows a "S" shape. On the right part of the plot, where $p &gt; 0.5$, </p> we observe that $\mathbf{P}(T; p) > p$, meaning that the advantage is amplified.
+          <h2 class="font-serif text-2xl">Fairness</h2>
+          <p>
+            While all tiebreakers aplify the advantage of the stronger player, it is clear that $T_7$ will be more &quot;fair&quot; than $T_2$. To quantify this &quot;fairness&quot;, we look at the steepness of the line tangent to
+            $\mathbf{P}(p, T)$ at $p = 0.5$, this is the dashed line in the left plot of Figure 1. When this line is very steep, it means that a small edge for Alex results
+            in a large advantage. We call this steepness $\mathbf{F}(T)$.
+          </p>
+          <p>
+            Formally, $\mathbf{F}(T)$ is the derivative of $\mathbf{P}(p, T)$ evaluated at $p=0.5$. Intuitively, let
+            $p = 0.5 + \epsilon$ where $\epsilon$ is a small margin. Then, by Taylor series,
+            $\mathbf{P}(0.5 + \epsilon, T) \simeq 0.5 + \mathbf{F}(T)\epsilon$. Thus the margin has been amplified by a
+            factor $\mathbf{F}(T)$.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Match length</h2>
+          <p>
+            While making a match longer amplifies the advantage of the stronger player, there is a trade-off: matches
+            cannot last forever. Thus we also want to evaluate a match structure $T$ based on how long it takes to play.
+          </p>
+          <p>
+            As many tennis structures can last forever (e.g. with advantages), we evaluate the expected number of points
+            played. We call this $\mathbf{E}(p, T)$.
+          </p>
+          <p>
+            To compute $\mathbf{E}(p, T)$ we can also use the same
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>. You can visualize $\mathbf{E}(p, T)$ for tiebreakers in the right plot in Figure 2. Of course, on average matches will last longest when they are balanced, meaning with $p=0.5$. 
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The Tradeoff</h2>
+          <p>
+            While we can all agree that there is a tradeoff between match length and fairness, we would like to quantify it better. In Figure 2, we plot $\mathbf{E}(0.5, T)$ against $\mathbf{F}(T)$. All the dots are tiebreaker of different length, we can see that as the tiebreakers become longer (more up), they also become more fair (more right).
+          </p>
+          <p>
+            The question that now rises naturally is: how does the real tennis game structure compare, with bet of 3 sets, each set being 6 games, tiebreakers and so on? You can see it as the star in Figure 2. Surprisingly, it lies under the tiebreaker curve. This means, that a tiebreaker of 91 points, will be just as fair as a normal tennis match, but on average it would take a bit more to play, and a tiebreaker of 87 points will be just as long as a tennis match on average, but it will be less fair.
+          </p>
+          
+                  <div class="flex justify-center">
+                    <div class="flex flex-col items-center gap-6 max-w-full">
+                      <div id="tradeoff_plot_container" class="relative w-[400px] aspect-square">
+                        <canvas id="tradeoff_plot" class="absolute inset-0 w-full h-full"></canvas>
+                        <div
+                          id="tradeoff_y_label"
+                          class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none"
+                        ></div>
+                        <div
+                          id="tradeoff_x_label"
+                          class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none"
+                        ></div>
+                        <div
+                          id="tradeoff_unreachable_label"
+                          class="absolute left-[55%] top-[82%] font-serif text-md whitespace-nowrap pointer-events-none text-gray-600"
+                        ></div>
+                      </div>
+                      <p class="text-center font-serif text-[15px] mt-2">
+                        <strong>Figure 2.</strong> Tradeoff between fairness $\mathbf{F}(T)$ and expected match length $\mathbf{E}(0.5, T)$. Dots are tiebreakers of different lengths, rhombuses represent the optimal matches $O_N$, and the star represents the official 2 sets tennis match. The Unreachable Zone is the region that we believe no match structure can achieve.
+                      </p>
+                    </div>
+                  </div>
+          <p>
+            Before being faced with this result, I thought tiebreakers would have been more efficient than the official tennis format, maybe less exiting to watch, but for sure simpler. This motivated me to try to undestand what is that makes tennis matches better, and is there a tennis match which is even more efficient?
+          </p>
+        </section>
+        <section>
+          <h2 class="font-serif text-2xl">The Optimal Tennis Match</h2>
+          <p>
+          After some thinkering, I came up with a match structure that is considerably more efficient. The match would work as follows. It starts with a score of $0$. If the first player wins the point, the score goes up by $1$, if the second one wins instead, it goes down by $1$. When the score reaches $N$, the first player won, when it reaches $-N$, the second one does.
+          </p>
+          <p>
+            We will call this match structure $O_N$, where $N$ and $-N$ are the scores to be reached respectivly from the two players.
+            Using our <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>, we observe a very satisfing fact:
+            $$
+            \begin{align*}
+            \mathbf{F}(O_N) &= N, \\
+            \mathbf{E}(O_N; 0.5) &= N^2.
+            \end{align*}
+            $$
+          </p>
+          <p>
+            $O_N$ matches are represented by black rhombuses in Figure 2. We can see that they vastly outperform tiebreakers, as well as the official tennis match.
+          </p>
+        </section>
+          <section>
+            <h2 class="font-serif text-2xl">The Conjecture</h2>
+            <p>
+            Even though the name $O_N$ is of course inspired by &quot;optimal&quot;, I never managed to prove this. I have a strong intuiton that there is a bound that cannot be beaten, and that such bound is achieved by $O_N$. Such bound is
+            $$
+            \mathbf{E}(T; 0.5) \geq \mathbf{F}(T)^2.
+            $$
+            </p>
+            <p>
+              Of course, I would love to either prove this conjecture, or to find a counterexample. If you have any cool ideas, you can use my <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a> to test your ideas. If you find a counterexample, or a proof, please let me know! Contact me at <a class="underline hover:no-underline" href="mailto:marco.milanta@gmail.com">marco.milanta@gmail.com</a>.
+            </p>
+          </section>
+      </article>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/optimal-tennis-match.ts"></script>
+</body>
+</html>
+

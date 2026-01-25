@@ -1,0 +1,30 @@
+{
+  "name": "probable-spork-web",
+  "version": "1.0.0",
+  "description": "playground for probable spork",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run -s typecheck && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmilanta/mmilanta.github.io.git"
+  },
+  "author": "Marco Milanta",
+  "license": "ISC",
+  "homepage": "https://mmilanta.github.io",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "@codemirror/lang-python": "^6.2.1",
+    "@tailwindcss/vite": "^4.1.7",
+    "chart.js": "^4.4.9",
+    "codemirror": "^6.0.1",
+    "tailwindcss": "^4.1.7"
+  }
+}

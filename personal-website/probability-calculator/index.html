@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="/src/styles.css" rel="stylesheet">
+
+  <title>Probability Calculator</title>
+
+  <!-- MathJax: required for rendering the LaTeX injected into #latex_p -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+      },
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+  <div class="min-h-screen">
+    <div class="m-10">
+      <div class="flex flex-row items-baseline justify-between gap-6 mb-6">
+        <h1 class="font-serif text-5xl">Probability Calculator</h1>
+        <nav class="flex flex-row gap-4 font-serif text-sm">
+          <a class="underline hover:no-underline" href="../">Home</a>
+          <a class="underline hover:no-underline" href="../optimal-tennis-match/">Optimal Tennis Match</a>
+        </nav>
+      </div>
+
+      <div class="flex flex-row">
+        <div class="flex-1">
+          <h2 class="font-serif text-2xl">Input</h2>
+          <p class="font-serif">The input is a Python function that defines the match structure. You should define two things:</p>
+            <ul class="font-serif list-disc list-outside ml-6">
+              <li><code>play_fn</code>: a function that takes two arguments: the current state of the match and a boolean indicating whether the next point is won by the player 1 or 2. The function should return the new state of the match. If the match is won by player 1, the function should return <code>GameEnd.WIN</code>, if player 2 wins, <code>GameEnd.LOSE</code>, and if the match is not yet won, the function should return the new state of the match.</li>
+              <li><code>s0</code>: the initial state of the match.</li>
+            </ul>
+          <p class="font-serif">The example here is a 7 point tiebreaker. Edit it to define your own match structure.</p>
+          
+          <div id="code_area" class=""></div>
+          <button id="run" class="border-red-600 border-2 hover:bg-red-400 rounded p-2 mt-4 font-serif w-25">Run</button>
+          <div class="mt-4">
+          <div id="error_div" class="hidden">
+            <h2 class="font-serif text-2xl text-red-600">Error</h2>
+            <p id="error_p" class="font-mono whitespace-pre-wrap"></p>
+          </div>
+          <div id="output_div" class="hidden">
+            <h2 class="font-serif text-2xl">Results</h2>
+            <p id="balanced_p" class="font-serif"></p>
+            <div id="result_div" class="hidden">
+            <p id="result_p" class="font-serif"></p>
+            <h2 class="font-serif text-xl">Optimal Tennis Match Conjecture</h2>
+            <p id="conjecture_p" class="font-serif"></p>
+            <a class="underline hover:no-underline" href="../optimal-tennis-match/">Read more about the conjecture.</a>
+          </div></div>
+        </div>
+        </div>
+        <div class="flex-none w-128">
+          <canvas id="output_plot" class="aspect-1/1"></canvas>
+          <canvas id="optimality_plot" class="aspect-1/1"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+
