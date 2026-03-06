@@ -1,6 +1,6 @@
 import { Chart, registerables, type ScatterDataPoint } from 'chart.js';
 import { computeGraphOrError } from './compute';
-import { linspace, probability_parallel, fairness, expectedLength as expectedLengthGraph } from './loadAlgo';
+import { linspace, probability_parallel, fairness } from './loadAlgo';
 import precomputedPoints from './precomputed-points.json';
 
 Chart.register(...registerables);
@@ -27,6 +27,65 @@ def play_fn(state, next_point: bool):
         return GameEnd.LOSE
     return state
 `
+const tennis_match = `s0 = (0, 0, 0, 0, 0, 0)
+
+def play_fn(state, next_point: bool):
+    pts1, pts2, g1, g2, s1, s2 = state
+
+    is_tb = (g1 == 6 and g2 == 6)
+    if next_point:
+        pts1 += 1
+    else:
+        pts2 += 1
+        
+    game_won_by = 0  # 0 = ongoing, 1 = Player 1, 2 = Player 2
+    
+    if is_tb:
+        if pts1 >= 7 and pts1 - pts2 >= 2:
+            game_won_by = 1
+        elif pts2 >= 7 and pts2 - pts1 >= 2:
+            game_won_by = 2
+        elif pts1 >= 6 and pts2 >= 6 and pts1 == pts2:
+            pts1, pts2 = 6, 6
+    else:
+        if pts1 >= 4 and pts1 - pts2 >= 2:
+            game_won_by = 1
+        elif pts2 >= 4 and pts2 - pts1 >= 2:
+            game_won_by = 2
+        elif pts1 >= 3 and pts2 >= 3 and pts1 == pts2:
+            pts1, pts2 = 3, 3
+            
+    if game_won_by != 0:
+        pts1, pts2 = 0, 0  # Reset points for the new game
+        
+        if game_won_by == 1:
+            g1 += 1
+        else:
+            g2 += 1
+            
+        set_won_by = 0
+        
+        if (g1 >= 6 and g1 - g2 >= 2) or g1 == 7:
+            set_won_by = 1
+        elif (g2 >= 6 and g2 - g1 >= 2) or g2 == 7:
+            set_won_by = 2
+            
+        if set_won_by != 0:
+            g1, g2 = 0, 0  # Reset games for the new set
+            
+            if set_won_by == 1:
+                s1 += 1
+            else:
+                s2 += 1
+                
+            if s1 == 2:
+                return GameEnd.WIN
+            if s2 == 2:
+                return GameEnd.LOSE
+
+    return (pts1, pts2, g1, g2, s1, s2) 
+`
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvasLeft = document.getElementById('tiebreaker_plot') as HTMLCanvasElement | null;
@@ -123,68 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
       },
     });
   }
-  function makeExpectedLengthChart(canvas: HTMLCanvasElement) {
-    return new Chart(canvas, {
-        type: 'line',
-        data: {
-          datasets: [
-            {
-              label: 'data',
-              data: [] as ScatterDataPoint[],
-              borderColor: 'black',
-              borderWidth: 2,
-            },
-          ],
-        },
-        options: {
-          responsive: true,
-          aspectRatio: 1,
-          animation: false,
-          scales: {
-            x: {
-              type: 'linear',
-              position: 'bottom',
-              min: 0,
-              max: 1,
-              ticks: {
-                stepSize: 0.25,
-                autoSkip: false,
-                callback: tickLabel,
-              },
-              title: {
-                display: false,
-                text: '',
-              },
-            },
-            y: {
-              type: 'linear',
-              position: 'bottom',
-              min: 0,
-              max: 19,
-              ticks: {
-                stepSize: 1,
-                autoSkip: false,
-                callback: tickLabel,
-              },
-              title: {
-                display: false,
-                text: '',
-              },
-            },
-          },
-          elements: {
-            point: {
-              radius: 0,
-            },
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      });
-  }
   function makeTradeoffChart(canvas: HTMLCanvasElement) {
     const xMax = 12;
     const yMax = 250;
@@ -274,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
   const chartLeft = makeProbabilityChart(canvasLeft);
-  const chartRight = makeExpectedLengthChart(canvasRight);
+  const chartRight = makeProbabilityChart(canvasRight);
   const tradeoffChart = makeTradeoffChart(canvasTradeoff);
 
   const graphByN = new Map<number, number[]>();
@@ -289,22 +286,13 @@ document.addEventListener('DOMContentLoaded', () => {
       { x: 0.5 - 1 / (2 * fr), y: 0 },
       { x: 0.5 + 1 / (2 * fr), y: 1 },
     ];
-    const expectedLengthData: ScatterDataPoint[] = ps.map((p) => ({
-      x: p,
-      y: expectedLengthGraph(graph, p),
-    }));
     chartLeft.data.datasets[0].data = probData;
     chartLeft.data.datasets[1].data = fairnessLine;
     chartLeft.update();
 
-    chartRight.data.datasets[0].data = expectedLengthData;
-    chartRight.update();
-
     if (xLabelLeft) xLabelLeft.innerHTML = '\\(p\\)';
     if (yLabelLeft) yLabelLeft.innerHTML = `\\(\\mathbf{P}(p, T_{${n}})\\)`;
-    if (xLabelRight) xLabelRight.innerHTML = '\\(p\\)';
-    if (yLabelRight) yLabelRight.innerHTML = `\\(\\mathbf{E}(p, T_{${n}})\\)`;
-    const labels = [xLabelLeft, yLabelLeft, xLabelRight, yLabelRight].filter(Boolean) as Element[];
+    const labels = [xLabelLeft, yLabelLeft].filter(Boolean) as Element[];
     if (labels.length) void typesetMath(...labels);
   }
 
@@ -332,6 +320,29 @@ document.addEventListener('DOMContentLoaded', () => {
       graphByN.set(n, result as number[]);
     }
     if (slider) slider.disabled = false;
+
+    {
+      const { result, error } = await computeGraphOrError(tennis_match);
+      if (error || !result) {
+        console.error('Failed to compute tennis match graph:', error);
+      } else {
+        const matchGraph = result as number[];
+        const probData = probability_parallel(matchGraph, ps) as ScatterDataPoint[];
+        const fr = fairness(matchGraph);
+        const fairnessLine: ScatterDataPoint[] = [
+          { x: 0.5 - 1 / (2 * fr), y: 0 },
+          { x: 0.5 + 1 / (2 * fr), y: 1 },
+        ];
+        chartRight.data.datasets[0].data = probData;
+        chartRight.data.datasets[1].data = fairnessLine;
+        chartRight.update();
+
+        if (xLabelRight) xLabelRight.innerHTML = '\\(p\\)';
+        if (yLabelRight) yLabelRight.innerHTML = '\\(\\mathbf{P}(p, M)\\)';
+        const labels = [xLabelRight, yLabelRight].filter(Boolean) as Element[];
+        if (labels.length) void typesetMath(...labels);
+      }
+    }
 
     if (tradeoffChart) {
       // Use precomputed points instead of computing them
