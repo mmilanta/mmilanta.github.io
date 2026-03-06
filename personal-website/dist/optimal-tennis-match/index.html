@@ -16,9 +16,9 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <script type="module" crossorigin src="/assets/optimalTennisMatch-CiU75CZ_.js"></script>
+  <script type="module" crossorigin src="/assets/optimalTennisMatch-B5w4pXkL.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/chart-BYGrh8Gb.js">
-  <link rel="stylesheet" crossorigin href="/assets/styles-2sjpkqLI.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-CEwJOmLH.css">
 </head>
 <body>
   <div class="min-h-screen flex justify-center">
@@ -64,21 +64,19 @@
             $$\mathbf{P}(p, T_2) = p^2 + p(1-p)p + (1-p)p^2 = 3p^2 - 2p^3.$$
           </p>
           <p>
-            where we define $\mathbf{P}(p, T_2)$ to be the probability of Alex to win $T_2$. Plugging in $p=0.54$ like
-            in Federer's case, for a 2-point tiebreaker, we get $\mathbf{P}(0.54, T_2) = 0.559872$. Being the match very
-            short, the amplification is rather small: circa $2\%$. But for longer matches, we can expect to amplify it
-            much more.
+            Here, $\mathbf{P}(p, T_2)$ denotes the probability that Alex wins $T_2$. Plugging Federer&apos;s $p = 0.54$ into
+            the formula gives $\mathbf{P}(0.54, T_2) = 0.559872$. In such a short match the amplification is only about
+            $2\%$, but longer matches can magnify even a small advantage much more.
           </p>
         </section>
 
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">N-point tiebreaker</h2>
           <p>
-            From here, it is natural to go beyond $T_2$, and to start looking at longer tiebreakers. Unfortunately, the math becomes very quickly complex; for this reason, I made a
+            From here, it is natural to go beyond $T_2$, and to start looking at longer tiebreakers and even at the real tennis match structure. That stange mess with games and sets. Unfortunately, the math becomes very quickly complex; for this reason, I made a
             <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>
             that allows us to compute $\mathbf{P}(p, T)$ for any arbitrary match structure $T$.
           </p>
-        </section>
         <div class="flex justify-center">
           <div class="flex flex-col items-center gap-6 max-w-full">
             <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 w-full">
@@ -109,30 +107,38 @@
 
             <div class="w-full max-w-[440px] flex flex-row items-center gap-3">
               <label for="tiebreaker_n" class="font-serif text-sm shrink-0">
-                <span class="italic text-lg">T</span><sub id="tiebreaker_n_value" class="font-mono">2</sub>
+                <span class="italic text-lg">T</span><sub id="tiebreaker_n_value" class="font-mono">7</sub>
               </label>
               <input
                 id="tiebreaker_n"
                 class="w-full"
                 type="range"
-                min="2"
+                min="1"
                 max="11"
                 step="1"
-                value="2"
+                value="7"
               />
             </div>
             <p class="text-center font-serif text-[15px] mt-2">
-              <strong>Figure 1.</strong> Probability $\mathbf{P}(p, T)$ on the left and expected length $\mathbf{E}(p, T)$ on the right for N-point tiebreakers.
+              <strong>Figure 1.</strong> Probability $\mathbf{P}(p, T)$ for N-point tiebreakers on the left and $\mathbf{P}(p, M)$ for the official best of three sets tennis match on the right. On the right we also highlight the value for Federer's career.
             </p>
           </div>
         </div>
+        <p>
+          The first plot shows clearly how longer tiebreaker yield a more pronounced advantage for the better player. On the right, we have the plot for the real best-of-3-sets tennis match. As the match is very long we can see how steep the $\mathbf{P}(p, M)$ is around $1/2$. We also pluged Federer's probability: $54\%$. The output then becomes $\simeq 86\%$. With a quick Wikipedia research, we find out that Federer won $82\%$ of the match played in his career. I guess this is a great success! We got the correct order of magnitude. The reason why they do not match, of course is that Federer's does not play i.i.d. points. He will have a much higher probability to win against some weaker opponents, or even against the same point he could play diffetently in crucial points.
+        </p>
+      </section>
+      <section class="space-y-3">
+        <h2 class="font-serif text-2xl">Are we playing tennis right?</h2>
+        The amplification effect of a tennis match is quite remarkable, and from the plot we can see that the og tennis structure amplificates much more than a tiebreaker. But this can be easly justified by the fact that a tennis match lasts much longer. What about a tiebreaker that is as long as a tennis match? Will it amplificate even better, or worse? To answer this question, we first need to make it rigorous. For this we need two key quantities: Fairness and Expected Match length.
+      </section>
         <section class="space-y-3">
-          <p>In the plot in Figure 1 we can see how $\mathbf{P}(T; p)$ follows a "S" shape. On the right part of the plot, where $p &gt; 0.5$, </p> we observe that $\mathbf{P}(T; p) > p$, meaning that the advantage is amplified.
           <h2 class="font-serif text-2xl">Fairness</h2>
           <p>
-            While all tiebreakers aplify the advantage of the stronger player, it is clear that $T_7$ will be more &quot;fair&quot; than $T_2$. To quantify this &quot;fairness&quot;, we look at the steepness of the line tangent to
-            $\mathbf{P}(p, T)$ at $p = 0.5$, this is the dashed line in the left plot of Figure 1. When this line is very steep, it means that a small edge for Alex results
-            in a large advantage. We call this steepness $\mathbf{F}(T)$.
+            Fairness is what we use to quantify the amplification effect of a match structure. While all tiebreakers amplify the advantage of the stronger player, $T_7$ is clearly more &quot;fair&quot; than $T_2$.
+            We define Fairness as the the steepness of the tangent to $\mathbf{P}(p, T)$ at $p = 0.5$ (the dashed
+            line in the left plot of Figure 1). A steeper line means that a small edge for Alex turns into a much larger advantage.
+            We call that steepness $\mathbf{F}(T)$.
           </p>
           <p>
             Formally, $\mathbf{F}(T)$ is the derivative of $\mathbf{P}(p, T)$ evaluated at $p=0.5$. Intuitively, let
@@ -150,21 +156,26 @@
           </p>
           <p>
             As many tennis structures can last forever (e.g. with advantages), we evaluate the expected number of points
-            played. We call this $\mathbf{E}(p, T)$.
+            played. We call this $\mathbf{E}(T)$.
           </p>
           <p>
-            To compute $\mathbf{E}(p, T)$ we can also use the same
-            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>. You can visualize $\mathbf{E}(p, T)$ for tiebreakers in the right plot in Figure 2. Of course, on average matches will last longest when they are balanced, meaning with $p=0.5$. 
+            To compute $\mathbf{E}(T)$ we can also use the same
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>. 
           </p>
         </section>
 
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">The Tradeoff</h2>
           <p>
-            While we can all agree that there is a tradeoff between match length and fairness, we would like to quantify it better. In Figure 2, we plot $\mathbf{E}(0.5, T)$ against $\mathbf{F}(T)$. All the dots are tiebreaker of different length, we can see that as the tiebreakers become longer (more up), they also become more fair (more right).
+            While we can agree that match length trades off with fairness, we would like to measure this relationship more precisely.
+            In Figure 2 we plot $\mathbf{E}(T)$ against $\mathbf{F}(T)$. Each dot corresponds to a tiebreaker of a different
+            length: as the tiebreakers grow longer (higher on the axis) they also become fairer (further to the right).
           </p>
           <p>
-            The question that now rises naturally is: how does the real tennis game structure compare, with bet of 3 sets, each set being 6 games, tiebreakers and so on? You can see it as the star in Figure 2. Surprisingly, it lies under the tiebreaker curve. This means, that a tiebreaker of 91 points, will be just as fair as a normal tennis match, but on average it would take a bit more to play, and a tiebreaker of 87 points will be just as long as a tennis match on average, but it will be less fair.
+            The natural question is how the official tennis format compares: best-of-three sets with first-to-six games and
+            tiebreakers. This format is shown as the star in Figure 2. Surprisingly, it falls below the tiebreaker curve,
+            meaning a 91-point tiebreaker would be as fair as a normal tennis match but would take slightly longer, while an
+            87-point tiebreaker would last about the same as a tennis match but be less fair.
           </p>
           
                   <div class="flex justify-center">
@@ -190,17 +201,22 @@
                     </div>
                   </div>
           <p>
-            Before being faced with this result, I thought tiebreakers would have been more efficient than the official tennis format, maybe less exiting to watch, but for sure simpler. This motivated me to try to undestand what is that makes tennis matches better, and is there a tennis match which is even more efficient?
+            Before seeing this result, I assumed tiebreakers would be more efficient than the official format—maybe less exciting
+            to watch. That motivated me to understand what makes tennis matches better and whether there
+            is an even more efficient structure.
           </p>
         </section>
         <section>
           <h2 class="font-serif text-2xl">The Optimal Tennis Match</h2>
           <p>
-          After some thinkering, I came up with a match structure that is considerably more efficient. The match would work as follows. It starts with a score of $0$. If the first player wins the point, the score goes up by $1$, if the second one wins instead, it goes down by $1$. When the score reaches $N$, the first player won, when it reaches $-N$, the second one does.
+            After some tinkering I devised a match structure that is significantly more efficient. It starts at a score of
+            $0$. Whenever the first player wins a point the score increases by $1$, and if the second player wins it decreases
+            by $1$. When the score reaches $N$, the first player wins; if it reaches $-N$, the second player wins.
           </p>
           <p>
-            We will call this match structure $O_N$, where $N$ and $-N$ are the scores to be reached respectivly from the two players.
-            Using our <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>, we observe a very satisfing fact:
+            We call this match structure $O_N$, where $N$ and $-N$ are the target scores for the two players. Using our
+            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>, we observe a very
+            satisfying fact:
             $$
             \begin{align*}
             \mathbf{F}(O_N) &= N, \\
@@ -212,18 +228,24 @@
             $O_N$ matches are represented by black rhombuses in Figure 2. We can see that they vastly outperform tiebreakers, as well as the official tennis match.
           </p>
         </section>
-          <section>
-            <h2 class="font-serif text-2xl">The Conjecture</h2>
-            <p>
-            Even though the name $O_N$ is of course inspired by &quot;optimal&quot;, I never managed to prove this. I have a strong intuiton that there is a bound that cannot be beaten, and that such bound is achieved by $O_N$. Such bound is
+        <section>
+          <h2 class="font-serif text-2xl">The Theorem</h2>
+          <p>
+            Maybe you already guessed that the name $O_N$ is inspired by &quot;optimal&quot;, indeed I have managed to prove that you cannot beat it. I have proven that for any match structure,
             $$
-            \mathbf{E}(T; 0.5) \geq \mathbf{F}(T)^2.
+            \mathbf{E}(T) \geq \mathbf{F}(T)^2.
             $$
-            </p>
-            <p>
-              Of course, I would love to either prove this conjecture, or to find a counterexample. If you have any cool ideas, you can use my <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a> to test your ideas. If you find a counterexample, or a proof, please let me know! Contact me at <a class="underline hover:no-underline" href="mailto:marco.milanta@gmail.com">marco.milanta@gmail.com</a>.
-            </p>
-          </section>
+          </p>
+          <p>
+            The proof is available <a class="underline hover:no-underline" href="../optimality_proof.pdf">here</a>.
+          </p>
+        </section>
+        <section>
+          <h2 class="font-serif text-2xl">Conclusion</h2>
+          <p>
+            We should at least try my proposed optimal tennis match! I think it would be very fun! (trust me, I played it with a friend)
+          </p>
+        </section>
       </article>
     </div>
   </div>

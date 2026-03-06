@@ -131,6 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
             borderDash: [6, 6],
             borderWidth: 2,
           },
+          {
+            label: 'bisectrix',
+            data: [{ x: 0, y: 0 }, { x: 1, y: 1 }] as ScatterDataPoint[],
+            borderColor: 'rgba(0,0,0,0.25)',
+            borderWidth: 1.5,
+          },
         ],
       },
       options: {
@@ -147,6 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
               stepSize: 0.25,
               autoSkip: false,
               callback: tickLabel,
+              maxRotation: 90,
+              minRotation: 90,
             },
             title: {
               display: false,
@@ -242,6 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 stepSize: 5,
                 autoSkip: false,
                 callback: tickLabel,
+                maxRotation: 90,
+                minRotation: 90,
               },
               title: {
                 display: false,
@@ -298,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function readN() {
     const nRaw = slider?.value ?? '2';
-    const n = Math.max(2, Math.min(11, Number.parseInt(nRaw, 10) || 2));
+    const n = Math.max(1, Math.min(11, Number.parseInt(nRaw, 10) || 7));
     if (sliderValue) sliderValue.textContent = String(n);
     render(n);
   }
@@ -309,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function precomputeAll() {
     if (slider) slider.disabled = true;
-    for (let n = 2; n <= 11; n++) {
+    for (let n = 1; n <= 11; n++) {
       const code = tie_breaker.replace('[[N_VALUE]]', String(n));
       const { result, error } = await computeGraphOrError(code);
       if (error || !result) {
@@ -333,8 +343,57 @@ document.addEventListener('DOMContentLoaded', () => {
           { x: 0.5 - 1 / (2 * fr), y: 0 },
           { x: 0.5 + 1 / (2 * fr), y: 1 },
         ];
+
+        const federerP = 0.54;
+        const federerIdx = probData.findIndex((d) => (d as { x: number }).x >= federerP);
+        const federerY = federerIdx >= 0 ? (probData[federerIdx] as { x: number; y: number }).y : 0;
+        const federerPoint: ScatterDataPoint[] = [{ x: federerP, y: federerY }];
+
+        const federerYRounded = Math.round(federerY * 100) / 100;
+
+        const yScale = chartRight.options.scales!.y as any;
+        yScale.afterBuildTicks = (axis: any) => {
+          const extra = { value: federerYRounded };
+          if (!axis.ticks.some((t: any) => Math.abs(t.value - federerYRounded) < 1e-9)) {
+            axis.ticks.push(extra);
+            axis.ticks.sort((a: any, b: any) => a.value - b.value);
+          }
+        };
+        const origYCallback = yScale.ticks.callback;
+        yScale.ticks.callback = function (value: unknown, index: number, ticks: unknown[]) {
+          const v = typeof value === 'string' ? Number.parseFloat(value) : Number(value);
+          if (Math.abs(v - federerYRounded) < 1e-9) return federerYRounded.toFixed(2);
+          return origYCallback ? origYCallback.call(this, value, index, ticks) : tickLabel(value);
+        };
+
+        const xScale = chartRight.options.scales!.x as any;
+        xScale.afterBuildTicks = (axis: any) => {
+          const extra = { value: federerP };
+          if (!axis.ticks.some((t: any) => Math.abs(t.value - federerP) < 1e-9)) {
+            axis.ticks.push(extra);
+            axis.ticks.sort((a: any, b: any) => a.value - b.value);
+          }
+        };
+        const origXCallback = xScale.ticks.callback;
+        xScale.ticks.callback = function (value: unknown, index: number, ticks: unknown[]) {
+          const v = typeof value === 'string' ? Number.parseFloat(value) : Number(value);
+          if (Math.abs(v - federerP) < 1e-9) return federerP.toFixed(2);
+          return origXCallback ? origXCallback.call(this, value, index, ticks) : tickLabel(value);
+        };
+
         chartRight.data.datasets[0].data = probData;
         chartRight.data.datasets[1].data = fairnessLine;
+        chartRight.data.datasets.push(
+          {
+            label: 'Federer',
+            data: federerPoint,
+            borderColor: 'black',
+            backgroundColor: 'black',
+            pointRadius: 5,
+            pointStyle: 'circle',
+            showLine: false,
+          } as any,
+        );
         chartRight.update();
 
         if (xLabelRight) xLabelRight.innerHTML = '\\(p\\)';
