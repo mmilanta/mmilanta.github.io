@@ -301,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chartLeft.update();
 
     if (xLabelLeft) xLabelLeft.innerHTML = '\\(p\\)';
-    if (yLabelLeft) yLabelLeft.innerHTML = `\\(\\mathbf{P}(p, T_{${n}})\\)`;
+    if (yLabelLeft) yLabelLeft.innerHTML = `\\(\\mathbf{P}(T_{${n}}; p)\\)`;
     const labels = [xLabelLeft, yLabelLeft].filter(Boolean) as Element[];
     if (labels.length) void typesetMath(...labels);
   }
@@ -397,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chartRight.update();
 
         if (xLabelRight) xLabelRight.innerHTML = '\\(p\\)';
-        if (yLabelRight) yLabelRight.innerHTML = '\\(\\mathbf{P}(p, M)\\)';
+        if (yLabelRight) yLabelRight.innerHTML = '\\(\\mathbf{P}(M; p)\\)';
         const labels = [xLabelRight, yLabelRight].filter(Boolean) as Element[];
         if (labels.length) void typesetMath(...labels);
       }
@@ -420,8 +420,8 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeoffChart.update();
     }
 
-    if (xLabelTradeoff) xLabelTradeoff.innerHTML = '\\(\\mathbf{F}(T)\\)';
-    if (yLabelTradeoff) yLabelTradeoff.innerHTML = '\\(\\mathbf{E}(0.5, T)\\)';
+    if (xLabelTradeoff) xLabelTradeoff.innerHTML = '\\(\\mathbf{F}(M)\\)';
+    if (yLabelTradeoff) yLabelTradeoff.innerHTML = '\\(\\mathbf{E}(M)\\)';
     if (unreachableLabel) unreachableLabel.innerHTML = '\\(\\text{Unreachable Zone}\\)';
     const labels = [xLabelTradeoff, yLabelTradeoff, unreachableLabel].filter(Boolean) as Element[];
     if (labels.length) void typesetMath(...labels);

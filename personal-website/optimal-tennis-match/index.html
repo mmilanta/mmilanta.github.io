@@ -70,13 +70,13 @@
           <p>Summing these possibilities, we obtain</p>
 
           <p>
-            $$\mathbf{P}(p, T_2) = p^2 + p(1-p)p + (1-p)p^2 = 3p^2 - 2p^3.$$
+            $$\mathbf{P}(T_2; p) = p^2 + p(1-p)p + (1-p)p^2 = 3p^2 - 2p^3.$$
           </p>
 
           <p>
-            Here $\mathbf{P}(p, T_2)$ denotes the probability that Alex wins $T_2$.
+            Here $\mathbf{P}(T_2; p)$ denotes the probability that Alex wins $T_2$.
             Plugging Federer&apos;s value $p = 0.54$ into the formula gives
-            $\mathbf{P}(0.54, T_2) = 0.559872$.
+            $\mathbf{P}(T_2; 0.54) = 0.559872$.
           </p>
 
           <p>
@@ -95,7 +95,7 @@
           <p>
             Unfortunately, the mathematics quickly becomes complex. For this reason I built a
             <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>
-            that allows us to compute $\mathbf{P}(p, T)$ for any match structure $T$.
+            that allows us to compute $\mathbf{P}(T; p)$ for any match structure $T$.
           </p>
 
           <div class="flex justify-center">
@@ -133,8 +133,8 @@
               </div>
 
               <p class="text-center font-serif text-[15px] mt-2">
-                <strong>Figure 1.</strong> Probability $\mathbf{P}(p, T)$ for N-point tiebreakers on the left and
-                $\mathbf{P}(p, M)$ for the official best-of-three-sets tennis match on the right.
+                <strong>Figure 1.</strong> Probability $\mathbf{P}(T; p)$ for N-point tiebreakers on the left and
+                $\mathbf{P}(M; p)$ for the official best-of-three-sets tennis match on the right.
                 On the right we also highlight Federer&apos;s value.
               </p>
 
@@ -144,7 +144,7 @@
           <p>
             The first plot clearly shows that longer tiebreakers produce a more pronounced advantage for the better
             player.
-            On the right we plot the probability $\mathbf{P}(p, M)$ for a real best-of-three-sets tennis match.
+            On the right we plot the probability $\mathbf{P}(M; p)$ for a real best-of-three-sets tennis match.
           </p>
 
           <p>
@@ -197,27 +197,27 @@
           </p>
 
           <p>
-            We define fairness as the slope of the tangent to $\mathbf{P}(p, T)$ at $p = 0.5$
+            We define fairness as the slope of the tangent to $\mathbf{P}(M; p)$ at $p = 0.5$
             (the dashed line in the left plot of Figure 1).
             A steeper slope means that a small edge for Alex turns into a much larger advantage.
           </p>
 
           <p>
-            We denote this slope by $\mathbf{F}(T)$.
+            We denote this slope by $\mathbf{F}(M)$.
           </p>
 
           <p>
-            Formally, $\mathbf{F}(T)$ is the derivative of $\mathbf{P}(p, T)$ evaluated at $p=0.5$.
+            Formally, $\mathbf{F}(M)$ is the derivative of $\mathbf{P}(M; p)$ evaluated at $p=0.5$.
             Intuitively, suppose $p = 0.5 + \epsilon$ where $\epsilon$ is a small margin.
             By Taylor expansion,
           </p>
 
           <p>
-            $$\mathbf{P}(0.5 + \epsilon, T) \simeq 0.5 + \mathbf{F}(T)\epsilon.$$
+            $$\mathbf{P}(M; 0.5 + \epsilon) \simeq 0.5 + \mathbf{F}(M)\epsilon.$$
           </p>
 
           <p>
-            Thus the margin has been amplified by a factor $\mathbf{F}(T)$.
+            Thus the margin has been amplified by a factor $\mathbf{F}(M)$.
           </p>
         </section>
 
@@ -235,11 +235,11 @@
 
           <p>
             Since many tennis formats can theoretically last forever (for example with advantages),
-            we measure the <strong>expected number of points played</strong>, denoted by $\mathbf{E}(T)$.
+            we measure the <strong>expected number of points played</strong>, denoted by $\mathbf{E}(M)$.
           </p>
 
           <p>
-            We can compute $\mathbf{E}(T)$ using the same
+            We can compute $\mathbf{E}(M)$ using the same
             <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>.
           </p>
         </section>
@@ -252,7 +252,7 @@
           </p>
 
           <p>
-            In Figure 2 we plot $\mathbf{E}(T)$ against $\mathbf{F}(T)$.
+            In Figure 2 we plot $\mathbf{E}(M)$ against $\mathbf{F}(M)$.
             Each dot corresponds to a tiebreaker of a different length:
             as tiebreakers become longer (higher on the axis), they also become fairer (further to the right).
           </p>
@@ -282,8 +282,8 @@
                 </div>
               </div>
               <p class="text-center font-serif text-[15px] mt-2">
-                <strong>Figure 2.</strong> Trade-off between fairness $\mathbf{F}(T)$ and expected match length
-                $\mathbf{E}(T)$.
+                <strong>Figure 2.</strong> Trade-off between fairness $\mathbf{F}(M)$ and expected match length
+                $\mathbf{E}(M)$.
                 The dots correspond to tiebreakers of different lengths, the rhombuses represent the optimal matches
                 $O_N$,
                 and the star represents the official best-of-three-sets tennis match. The Unreachable Zone is the region that, according to our theorem, no match structure can achieve.
@@ -324,7 +324,7 @@
             $$
             \begin{align*}
             \mathbf{F}(O_N) &= N, \\
-            \mathbf{E}(O_N; 0.5) &= N^2.
+            \mathbf{E}(O_N) &= N^2.
             \end{align*}
             $$
           </p>
@@ -344,11 +344,11 @@
           </p>
 
           <p>
-            For any match structure $T$,
+            For any match structure $M$,
           </p>
 
           <p>
-            $$\mathbf{E}(T) \geq \mathbf{F}(T)^2.$$
+            $$\mathbf{E}(M) \geq \mathbf{F}(M)^2.$$
           </p>
 
           <p>
