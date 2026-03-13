@@ -38,14 +38,14 @@
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">The Paradox of Federer&apos;s Success</h2>
           <p>
-            Roger Federer, one of the most successful tennis players in history, once mentioned in a speech that he won
+            Roger Federer, one of the greatest tennis players in history, once mentioned in a speech that he won
             only about <strong>54% of the points</strong> he played. This statement may seem paradoxical: how can a
             player
             with such a small margin of superiority dominate the sport?
           </p>
           <p>
             The answer lies in the <strong>amplification effect</strong> of match structures, where small advantages
-            accumulate and produce much outcomes.
+            accumulate and produce larger outcomes.
           </p>
         </section>
 
@@ -89,9 +89,9 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">N-point tiebreaker</h2>
+          <h2 class="font-serif text-2xl">Complex Game Structures</h2>
           <p>
-            From here it is natural to go beyond $T_2$ and look at longer tiebreakers or even to the real structure of a
+            From here it is natural to go beyond $T_2$ and look at longer tiebreakers or even at the real structure of a
             tennis match, with its somewhat complicated system of games and sets.
           </p>
 
@@ -143,21 +143,18 @@
           </div>
 
           <p>
-            On the left we plot the probability $\mathbf{P}(M; p)$ for a real best-of-three-sets tennis match.
-            The second plot clearly shows that longer tiebreakers produce a more pronounced advantage for the better
-            player.
+            On the plot on the right (on the bottom if you are on a phone), we see $\mathbf{P}(T; p)$ for tiebreakers of different lengths. If we only play 1 point, then it is just $\mathbf{P}(T; p) = p$, but as the length of the tiebreaker increases (play with the slider), then the curve goes up, for $p>1/2$ and down for $p &lt; 1/2$. This is exactly the amplification effect. Of course as matches becomes longer, this amplification becomes more stark.
           </p>
 
           <p>
-            Because the match is much longer, the curve becomes very steep around $p = 1/2$.
+            On the plot on the left we look at the full tennis match, best-of-three sets. Here, the amplification effect is enormous.
             If we plug in Federer&apos;s probability of <strong>54%</strong>, the predicted probability of winning a
             match
-            becomes approximately <strong>86%</strong>.
+            becomes approximately <strong>86%</strong>. A net $+32\%$!
           </p>
 
           <p>
-            A quick search on Wikipedia shows that Federer won about <strong>82%</strong> of the matches he played
-            during his career. This is quite encouraging: we obtained the correct order of magnitude.
+            A quick search on Wikipedia shows that Federer won about <strong>82%</strong> of the matches in his career. This is quite encouraging: we obtained the correct order of magnitude.
           </p>
 
           <p>
@@ -171,19 +168,13 @@
           <h2 class="font-serif text-2xl">Are we playing tennis right?</h2>
 
           <p>
-            The amplification effect of a tennis match is quite remarkable. From the plot we see that the official
-            tennis structure amplifies the advantage of the stronger player much more than a simple tiebreaker.
-            This can largely be explained by the fact that a tennis match lasts much longer.
-          </p>
-
-          <p>
-            But what if we consider a tiebreaker that lasts roughly as long as a tennis match?
+            While the amplification effect of a tennis match is quite remarkable, this can largely be explained by the fact that a tennis match lasts much longer. For this reason we now look into tiebreakers that lasts roughly as long as a tennis match?
             Would it amplify skill differences better or worse?
           </p>
 
           <p>
-            To answer this question we first need to make things precise.
-            For this we introduce two key quantities: <strong>fairness</strong> and
+            However, to make 
+            However a tennis match can technically last forever due to advantages. And on top, how can we directly compare the amplification effect of two different game structures? To go beyond an handweavy intuition, we need to introduce two key quantities: <strong>fairness</strong> and
             <strong>expected match length</strong>.
           </p>
         </section>
@@ -194,16 +185,13 @@
           <p>
             Fairness is our way of quantifying the amplification effect of a match structure.
             While all tiebreakers amplify the advantage of the stronger player, $T_7$ is clearly more
-            “fair” than $T_2$.
+            “fair” than $T_2$, and the best-of-three tennis match is more fair than $T_7$.
           </p>
 
           <p>
             We define fairness as the slope of the tangent to $\mathbf{P}(M; p)$ at $p = 0.5$
             (the dashed line in the right plot of Figure 1).
             A steeper slope means that a small edge for Alex turns into a much larger advantage.
-          </p>
-
-          <p>
             We denote this slope by $\mathbf{F}(M)$.
           </p>
 
@@ -228,20 +216,12 @@
           <p>
             While making a match longer amplifies the advantage of the stronger player,
             there is an obvious trade-off: matches cannot last forever.
-          </p>
-
-          <p>
-            Therefore we also evaluate a match structure $T$ based on how long it takes to play.
+            Therefore we also evaluate a match structure $M$ based on how long it takes to play.
           </p>
 
           <p>
             Since many tennis formats can theoretically last forever (for example with advantages),
             we measure the <strong>expected number of points played</strong>, denoted by $\mathbf{E}(M)$.
-          </p>
-
-          <p>
-            We can compute $\mathbf{E}(M)$ using the same
-            <a class="underline hover:no-underline" href="../probability-calculator/">Probability Calculator</a>.
           </p>
         </section>
 
@@ -255,7 +235,7 @@
           <p>
             In Figure 2 we plot $\mathbf{E}(M)$ against $\mathbf{F}(M)$.
             Each dot corresponds to a tiebreaker of a different length:
-            as tiebreakers become longer (higher on the axis), they also become fairer (further to the right).
+            as tiebreakers become longer (higher on the y-axis), they also become fairer (further to the right).
           </p>
 
           <p>
@@ -293,8 +273,7 @@
           </div>
 
           <p>
-            Before seeing this result, I assumed that tiebreakers would be more efficient than the official format or
-            perhaps less exciting to watch but mathematically more efficient. This motivated me to investigate what
+            Before seeing this result I assumed that tiebreakers would be more efficient than the official format: perhaps less exciting to watch, but mathematically more efficient. But the opposite turns out to be true, this motivated me to investigate what
             makes tennis matches effective and whether an even more efficient structure exists.
           </p>
 
@@ -311,9 +290,6 @@
             The match starts at score $0$. Whenever the first player wins a point the score increases by $1$,
             and when the second player wins a point it decreases by $1$.
             When the score reaches $N$, the first player wins; if it reaches $-N$, the second player wins.
-          </p>
-
-          <p>
             We call this match structure $O_N$.
           </p>
 
@@ -362,7 +338,7 @@
           <h2 class="font-serif text-2xl">Conclusion</h2>
           <p>
             Perhaps we should at least try my proposed optimal tennis match!
-            I think it would be very fun (trust me, I tested it with a friend).
+            I think it would be great fun (trust me, I tested it with a friend).
           </p>
         </section>
       </article>
