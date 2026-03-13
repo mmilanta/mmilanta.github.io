@@ -106,22 +106,22 @@
 
               <div class="flex flex-col md:flex-row items-center md:items-start justify-center gap-8 w-full">
 
-                <div id="tiebreaker_plot_container" class="relative w-[400px] max-w-full aspect-square mb-2">
-                  <canvas id="tiebreaker_plot" class="absolute inset-0 w-full h-full"></canvas>
-                  <div id="tiebreaker_y_label"
-                    class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none">
-                  </div>
-                  <div id="tiebreaker_x_label"
-                    class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none">
-                  </div>
-                </div>
-
                 <div id="tiebreaker_plot_container_right" class="relative w-[400px] max-w-full aspect-square mb-2">
                   <canvas id="tiebreaker_plot_right" class="absolute inset-0 w-full h-full"></canvas>
                   <div id="tiebreaker_y_label_right"
                     class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none">
                   </div>
                   <div id="tiebreaker_x_label_right"
+                    class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none">
+                  </div>
+                </div>
+
+                <div id="tiebreaker_plot_container" class="relative w-[400px] max-w-full aspect-square mb-2">
+                  <canvas id="tiebreaker_plot" class="absolute inset-0 w-full h-full"></canvas>
+                  <div id="tiebreaker_y_label"
+                    class="absolute left-0 top-1/2 -translate-x-2/3 -translate-y-1/2 -rotate-90 origin-center font-serif text-md whitespace-nowrap pointer-events-none">
+                  </div>
+                  <div id="tiebreaker_x_label"
                     class="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-full font-serif text-md whitespace-nowrap pointer-events-none">
                   </div>
                 </div>
@@ -136,18 +136,16 @@
               </div>
 
               <p class="text-center font-serif text-[15px] mt-2">
-                <strong>Figure 1.</strong> Probability $\mathbf{P}(T; p)$ for N-point tiebreakers on the left and
-                $\mathbf{P}(M; p)$ for the official best-of-three-sets tennis match on the right.
-                On the right we also highlight Federer&apos;s value.
+                <strong>Figure 1.</strong> Probability $\mathbf{P}(M; p)$ for the official best-of-three-sets tennis match on the left. Here we also highlight Federer&apos;s value. On the right we plot $\mathbf{P}(T; p)$ for N-point tiebreakers.
               </p>
 
             </div>
           </div>
 
           <p>
-            The first plot clearly shows that longer tiebreakers produce a more pronounced advantage for the better
+            On the left we plot the probability $\mathbf{P}(M; p)$ for a real best-of-three-sets tennis match.
+            The second plot clearly shows that longer tiebreakers produce a more pronounced advantage for the better
             player.
-            On the right we plot the probability $\mathbf{P}(M; p)$ for a real best-of-three-sets tennis match.
           </p>
 
           <p>
@@ -201,7 +199,7 @@
 
           <p>
             We define fairness as the slope of the tangent to $\mathbf{P}(M; p)$ at $p = 0.5$
-            (the dashed line in the left plot of Figure 1).
+            (the dashed line in the right plot of Figure 1).
             A steeper slope means that a small edge for Alex turns into a much larger advantage.
           </p>
 
