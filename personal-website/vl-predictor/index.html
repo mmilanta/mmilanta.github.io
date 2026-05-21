@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VL Predictor — Boulder Lookup</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa; color: #212529; line-height: 1.5;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: #6c757d; font-size: 0.875rem; margin-bottom: 1.5rem; }
+
+    .controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .controls input {
+      padding: 0.5rem 0.75rem; border: 1px solid #ced4da; border-radius: 6px;
+      font-size: 0.875rem; outline: none; background: #fff; width: 100%;
+    }
+    .controls input:focus { border-color: #4dabf7; box-shadow: 0 0 0 2px rgba(77,171,247,0.2); }
+
+    .stats { font-size: 0.8125rem; color: #6c757d; margin-bottom: 1rem; }
+
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid #dee2e6; font-weight: 600;
+         color: #495057; white-space: nowrap; cursor: pointer; user-select: none; }
+    th:hover { color: #212529; background: #e9ecef; }
+    th.sort-active { color: #212529; }
+    th .arrow { font-size: 0.65rem; margin-left: 2px; opacity: 0.4; }
+    th.sort-active .arrow { opacity: 1; }
+    td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e9ecef; white-space: nowrap; }
+    tr:hover td { background: #f1f3f5; }
+    .name { font-weight: 500; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+    .z-neg { color: #1971c2; font-weight: 500; }
+    .z-pos { color: #c92a2a; font-weight: 500; }
+    .z-zero { color: #868e96; }
+    .grade { font-variant-numeric: tabular-nums; }
+
+    .loading { text-align: center; padding: 3rem; color: #868e96; }
+
+    @media (max-width: 600px) {
+      .container { padding: 1rem 0.5rem; }
+      th, td { padding: 0.3rem 0.4rem; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>VL Predictor</h1>
+  <p class="subtitle">Boulder grades inferred from 1M+ ascent logs — residuals vs grade median</p>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search by name or area…" autofocus>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th data-sort="n">Name<span class="arrow"></span></th>
+          <th data-sort="c">Area<span class="arrow"></span></th>
+          <th data-sort="gn">Grade<span class="arrow"></span></th>
+          <th data-sort="e">Elo<span class="arrow"></span></th>
+          <th data-sort="lo">Elo lo<span class="arrow"></span></th>
+          <th data-sort="hi">Elo hi<span class="arrow"></span></th>
+          <th data-sort="r">Residual<span class="arrow"></span></th>
+          <th data-sort="z" class="sort-active">z-score<span class="arrow">▼</span></th>
+          <th data-sort="a">Ascents<span class="arrow"></span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+let boulders = [];
+let filtered = [];
+
+const MAX_SHOWN = 200;
+let sortKey = 'az';   // default: |z| descending
+let sortAsc = false;
+
+const tbody = document.getElementById('tbody');
+const stats = document.getElementById('stats');
+const searchEl = document.getElementById('search');
+const headers = document.querySelectorAll('th[data-sort]');
+
+function updateHeaders() {
+  headers.forEach(th => {
+    const key = th.dataset.sort;
+    th.classList.toggle('sort-active', key === sortKey);
+    const arrow = th.querySelector('.arrow');
+    if (key === sortKey) {
+      arrow.textContent = sortAsc ? '▲' : '▼';
+    } else {
+      arrow.textContent = '';
+    }
+  });
+}
+
+function render() {
+  const q = searchEl.value.toLowerCase().trim();
+  filtered = boulders.filter(b => {
+    if (!q) return true;
+    return b.n.toLowerCase().includes(q) || b.c.toLowerCase().includes(q);
+  });
+
+  const cmp = (a, b) => {
+    let va, vb;
+    if (sortKey === 'az') { va = Math.abs(a.z); vb = Math.abs(b.z); }
+    else                   { va = a[sortKey]; vb = b[sortKey]; }
+
+    if (typeof va === 'string') {
+      return sortAsc ? vb.localeCompare(va) : va.localeCompare(vb);
+    }
+    return sortAsc ? va - vb : vb - va;
+  };
+  filtered.sort(cmp);
+
+  const shown = filtered.slice(0, MAX_SHOWN);
+  const colLabels = { az: '|z|', n: 'name', c: 'area', gn: 'grade', e: 'elo', lo: 'elo lo', hi: 'elo hi', r: 'residual', z: 'z-score', a: 'ascents' };
+  stats.textContent = q
+    ? `${filtered.length} matches for "${q}" — showing ${shown.length}, sorted by ${colLabels[sortKey] || sortKey} ${sortAsc ? '↑' : '↓'}`
+    : `${filtered.length} boulders — showing top ${shown.length} by ${colLabels[sortKey] || sortKey} ${sortAsc ? '↑' : '↓'}`;
+
+  tbody.innerHTML = shown.map(b => {
+    const zCls = b.z < -0.01 ? 'z-neg' : b.z > 0.01 ? 'z-pos' : 'z-zero';
+    const zSign = b.z > 0 ? '+' : '';
+    return `<tr>
+      <td class="name" title="${esc(b.n)}">${esc(b.n)}</td>
+      <td>${esc(b.c)}</td>
+      <td class="grade">${esc(b.g)}</td>
+      <td>${b.e.toFixed(2)}</td>
+      <td>${b.lo.toFixed(2)}</td>
+      <td>${b.hi.toFixed(2)}</td>
+      <td>${b.r >= 0 ? '+' : ''}${b.r.toFixed(3)}</td>
+      <td class="${zCls}">${zSign}${b.z.toFixed(2)}</td>
+      <td>${b.a}</td>
+    </tr>`;
+  }).join('');
+
+  updateHeaders();
+}
+
+function esc(s) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(s));
+  return div.innerHTML;
+}
+
+headers.forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (sortKey === key) {
+      sortAsc = !sortAsc;
+    } else {
+      sortKey = key;
+      sortAsc = false;
+    }
+    render();
+  });
+});
+
+let debounceTimer;
+searchEl.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(render, 100);
+});
+
+// Load
+fetch('boulders.json')
+  .then(r => r.json())
+  .then(data => {
+    boulders = data;
+    render();
+  })
+  .catch(() => {
+    tbody.innerHTML = '<tr><td colspan="9" class="loading">Failed to load boulders.json</td></tr>';
+  });
+
+tbody.innerHTML = '<tr><td colspan="9" class="loading">Loading…</td></tr>';
+</script>
+</body>
+</html>
