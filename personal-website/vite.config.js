@@ -15,6 +15,7 @@ export default defineConfig(({ command, mode }) => ({
         index: resolve(__dirname, 'index.html'),
         probabilityCalculator: resolve(__dirname, 'probability-calculator/index.html'),
         optimalTennisMatch: resolve(__dirname, 'optimal-tennis-match/index.html'),
+        boulderGrades: resolve(__dirname, 'boulder-grades/index.html'),
       },
     }
   },

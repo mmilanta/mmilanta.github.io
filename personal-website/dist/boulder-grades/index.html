@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    mjx-container { overflow-x: auto; max-width: 100%; }
+  </style>
+
+  <title>Inferring Boulder Grades</title>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles-BLp6nmse.css">
+</head>
+
+<body>
+  <div class="min-h-screen flex justify-center overflow-x-hidden">
+    <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-4xl w-full min-w-0">
+      <div class="flex flex-row flex-wrap items-baseline justify-between gap-4 sm:gap-6 mb-6">
+        <h1 class="font-serif text-3xl sm:text-5xl">Inferring Boulder Grades</h1>
+        <nav class="flex flex-row gap-4 font-serif text-sm">
+          <a class="underline hover:no-underline" href="../">Home</a>
+        </nav>
+      </div>
+
+      <article class="font-serif text-lg leading-relaxed space-y-6">
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The problem with grades</h2>
+          <p>
+            Every boulder problem carries a grade — a single number meant to capture how hard the climb is.
+            In practice, grades are noisy. The first ascensionist proposes one, later climbers agree or
+            disagree, and the consensus drifts over the years. Two problems sharing the same grade can feel
+            wildly different, and a &ldquo;soft&rdquo; 7A may be easier than a &ldquo;hard&rdquo; 6C+.
+          </p>
+          <p>
+            The grade is a label. What we actually want is the underlying <em>difficulty</em>.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Climbers as a rating system</h2>
+          <p>
+            Each ascent log is a small piece of evidence: this climber tried this boulder and either sent it
+            or didn&apos;t. If we treat climbers and boulders as players in a head-to-head game, we can fit
+            an Elo-style model where each boulder and each climber has a latent strength, and the probability
+            of a send depends on their difference.
+          </p>
+          <p>
+            Given enough overlapping ascents, the model can untangle &ldquo;this climber is strong&rdquo; from
+            &ldquo;this boulder is soft&rdquo; — even though neither is directly observed.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The data</h2>
+          <p>
+            The model is fit on more than a million logged ascents. For each boulder I report a posterior
+            Elo with a credible interval, and compare it to the median Elo of all boulders sharing the same
+            grade. The residual — and its z-score — tells you how soft or hard the boulder is relative to
+            its label.
+          </p>
+          <p>
+            <a class="underline hover:no-underline" href="../vl-predictor/">Browse the full table &rarr;</a>
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">What&apos;s next</h2>
+          <p>
+            A proper write-up of the model, the priors, and the inference is coming. For now, the data
+            speaks for itself: search for a boulder you&apos;ve tried and see whether the numbers agree
+            with your fingers.
+          </p>
+        </section>
+
+      </article>
+    </div>
+  </div>
+</body>
+
+</html>
