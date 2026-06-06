@@ -14,23 +14,41 @@
     h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
     .subtitle { color: #6c757d; font-size: 0.875rem; margin-bottom: 1.5rem; }
 
-    .controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .controls input {
       padding: 0.5rem 0.75rem; border: 1px solid #ced4da; border-radius: 6px;
-      font-size: 0.875rem; outline: none; background: #fff; width: 100%;
+      font-size: 0.875rem; outline: none; background: #fff; flex: 1 1 240px;
     }
     .controls input:focus { border-color: #4dabf7; box-shadow: 0 0 0 2px rgba(77,171,247,0.2); }
 
     .stats { font-size: 0.8125rem; color: #6c757d; margin-bottom: 1rem; }
 
-    .table-wrap { overflow-x: auto; }
+    .pagination { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.875rem; flex-wrap: wrap; }
+    .pagination button {
+      padding: 0.35rem 0.7rem; border: 1px solid #ced4da; border-radius: 6px;
+      background: #fff; cursor: pointer; font-size: 0.875rem;
+    }
+    .pagination button:hover:not(:disabled) { background: #e9ecef; }
+    .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+    .pagination .page-info { color: #6c757d; }
+
+    .table-wrap { overflow-x: auto; position: relative; }
     table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
     th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid #dee2e6; font-weight: 600;
-         color: #495057; white-space: nowrap; cursor: pointer; user-select: none; }
-    th:hover { color: #212529; background: #e9ecef; }
-    th.sort-active { color: #212529; }
+         color: #495057; white-space: nowrap; user-select: none; position: relative; }
+    th .sort-area { cursor: pointer; }
+    th .sort-area:hover { color: #212529; }
+    th.sort-active .sort-area { color: #212529; }
     th .arrow { font-size: 0.65rem; margin-left: 2px; opacity: 0.4; }
     th.sort-active .arrow { opacity: 1; }
+    th .filter-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-left: 4px; padding: 2px 4px; border-radius: 3px;
+      color: #adb5bd; cursor: pointer; vertical-align: middle;
+    }
+    th .filter-btn svg { display: block; }
+    th .filter-btn:hover { background: #e9ecef; color: #495057; }
+    th.filter-active .filter-btn { color: #1971c2; background: #d0ebff; }
     td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e9ecef; white-space: nowrap; }
     tr:hover td { background: #f1f3f5; }
     .name { font-weight: 500; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
@@ -40,6 +58,42 @@
     .grade { font-variant-numeric: tabular-nums; }
 
     .loading { text-align: center; padding: 3rem; color: #868e96; }
+
+    .filter-popover {
+      position: absolute; z-index: 10; top: 100%; left: 0;
+      background: #fff; border: 1px solid #ced4da; border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      padding: 0.6rem; font-weight: 400; color: #212529;
+      display: flex; flex-direction: column; gap: 0.5rem; min-width: 200px;
+    }
+    .filter-popover .row { display: flex; gap: 0.35rem; }
+    .filter-popover input, .filter-popover select {
+      padding: 0.35rem 0.5rem; border: 1px solid #ced4da; border-radius: 4px;
+      font-size: 0.85rem; outline: none; background: #fff;
+    }
+    .filter-popover input:focus, .filter-popover select:focus {
+      border-color: #4dabf7; box-shadow: 0 0 0 2px rgba(77,171,247,0.2);
+    }
+    .filter-popover input { flex: 1; min-width: 0; }
+    .filter-popover .actions { display: flex; gap: 0.35rem; justify-content: flex-end; }
+    .filter-popover button {
+      padding: 0.3rem 0.6rem; border: 1px solid #ced4da; border-radius: 4px;
+      background: #fff; cursor: pointer; font-size: 0.8rem;
+    }
+    .filter-popover button:hover { background: #e9ecef; }
+    .filter-popover button.primary { background: #228be6; color: #fff; border-color: #228be6; }
+    .filter-popover button.primary:hover { background: #1c7ed6; }
+    .filter-popover .combo-list {
+      max-height: 200px; overflow-y: auto; border: 1px solid #e9ecef;
+      border-radius: 4px; background: #fff;
+    }
+    .filter-popover .combo-item {
+      padding: 0.3rem 0.5rem; font-size: 0.85rem; cursor: pointer;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .filter-popover .combo-item:hover, .filter-popover .combo-item.active { background: #e7f5ff; }
+    .filter-popover .combo-item.selected { background: #d0ebff; font-weight: 500; }
+    .filter-popover .combo-empty { padding: 0.4rem 0.5rem; font-size: 0.8rem; color: #868e96; }
 
     @media (max-width: 600px) {
       .container { padding: 1rem 0.5rem; }
@@ -62,51 +116,259 @@
     <table>
       <thead>
         <tr>
-          <th data-sort="n">Name<span class="arrow"></span></th>
-          <th data-sort="c">Area<span class="arrow"></span></th>
-          <th data-sort="gn">Grade<span class="arrow"></span></th>
-          <th data-sort="e">Elo<span class="arrow"></span></th>
-          <th data-sort="lo">Elo lo<span class="arrow"></span></th>
-          <th data-sort="hi">Elo hi<span class="arrow"></span></th>
-          <th data-sort="r">Residual<span class="arrow"></span></th>
-          <th data-sort="z" class="sort-active">z-score<span class="arrow">▼</span></th>
-          <th data-sort="a">Ascents<span class="arrow"></span></th>
+          <th data-sort="n"><span class="sort-area">Name<span class="arrow"></span></span></th>
+          <th data-sort="c" data-filter="area"><span class="sort-area">Area<span class="arrow"></span></span><span class="filter-btn" title="Filter" aria-label="Filter"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 3h12l-4.5 6v4l-3 1.5V9z"/></svg></span></th>
+          <th data-sort="gn" data-filter="grade"><span class="sort-area">Grade<span class="arrow"></span></span><span class="filter-btn" title="Filter" aria-label="Filter"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 3h12l-4.5 6v4l-3 1.5V9z"/></svg></span></th>
+          <th data-sort="e"><span class="sort-area">Elo<span class="arrow"></span></span></th>
+          <th data-sort="lo"><span class="sort-area">Elo lo<span class="arrow"></span></span></th>
+          <th data-sort="hi"><span class="sort-area">Elo hi<span class="arrow"></span></span></th>
+          <th data-sort="r"><span class="sort-area">Residual<span class="arrow"></span></span></th>
+          <th data-sort="z" class="sort-active"><span class="sort-area">z-score<span class="arrow">▼</span></span></th>
+          <th data-sort="a" data-filter="ascents"><span class="sort-area">Ascents<span class="arrow"></span></span><span class="filter-btn" title="Filter" aria-label="Filter"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M2 3h12l-4.5 6v4l-3 1.5V9z"/></svg></span></th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
     </table>
   </div>
+
+  <div class="pagination" id="pagination"></div>
 </div>
 
 <script>
 let boulders = [];
 let filtered = [];
+let sortedGrades = [];
+let sortedAreas = [];
 
-const MAX_SHOWN = 200;
-let sortKey = 'az';   // default: |z| descending
+const PAGE_SIZE = 200;
+let currentPage = 1;
+let sortKey = 'az';
 let sortAsc = false;
+
+const filters = {
+  area: '',                       // substring
+  grade: { op: '=', value: '' },  // op in '=','>=','<=', value is the grade string
+  ascents: '',                    // min ascents (number as string)
+};
 
 const tbody = document.getElementById('tbody');
 const stats = document.getElementById('stats');
 const searchEl = document.getElementById('search');
+const paginationEl = document.getElementById('pagination');
 const headers = document.querySelectorAll('th[data-sort]');
+
+let openPopover = null;
+
+function esc(s) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(s));
+  return div.innerHTML;
+}
+
+function closePopover() {
+  if (openPopover) {
+    openPopover.remove();
+    openPopover = null;
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (openPopover && !openPopover.contains(e.target) && !e.target.closest('.filter-btn')) {
+    closePopover();
+  }
+});
+
+function openFilterPopover(th, kind) {
+  closePopover();
+  const pop = document.createElement('div');
+  pop.className = 'filter-popover';
+  pop.onclick = (e) => e.stopPropagation();
+
+  if (kind === 'area') {
+    pop.innerHTML = `
+      <input type="text" id="popAreaInput" placeholder="Search area…" autocomplete="off" value="${esc(filters.area)}">
+      <div class="combo-list" id="popAreaList"></div>
+      <div class="actions">
+        <button type="button" id="popClear">Clear</button>
+      </div>
+    `;
+    th.appendChild(pop);
+    openPopover = pop;
+    const input = pop.querySelector('#popAreaInput');
+    const list = pop.querySelector('#popAreaList');
+    let activeIdx = -1;
+    let currentMatches = [];
+
+    function renderList() {
+      const q = input.value.toLowerCase().trim();
+      currentMatches = q
+        ? sortedAreas.filter(a => a.toLowerCase().includes(q))
+        : sortedAreas.slice();
+      if (currentMatches.length === 0) {
+        list.innerHTML = `<div class="combo-empty">No matches</div>`;
+        return;
+      }
+      list.innerHTML = currentMatches.slice(0, 200).map((a, i) => {
+        const cls = ['combo-item'];
+        if (a === filters.area) cls.push('selected');
+        if (i === activeIdx) cls.push('active');
+        return `<div class="${cls.join(' ')}" data-idx="${i}">${esc(a)}</div>`;
+      }).join('');
+      list.querySelectorAll('.combo-item').forEach(el => {
+        el.onclick = () => {
+          filters.area = currentMatches[Number(el.dataset.idx)];
+          currentPage = 1; closePopover(); render();
+        };
+      });
+    }
+
+    renderList();
+    input.focus();
+    input.select();
+    input.addEventListener('input', () => { activeIdx = -1; renderList(); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIdx = Math.min(currentMatches.length - 1, activeIdx + 1);
+        renderList();
+        const el = list.querySelector('.combo-item.active');
+        if (el) el.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIdx = Math.max(0, activeIdx - 1);
+        renderList();
+        const el = list.querySelector('.combo-item.active');
+        if (el) el.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const pick = activeIdx >= 0 ? currentMatches[activeIdx] : currentMatches[0];
+        if (pick) {
+          filters.area = pick; currentPage = 1; closePopover(); render();
+        }
+      } else if (e.key === 'Escape') {
+        closePopover();
+      }
+    });
+    pop.querySelector('#popClear').onclick = () => {
+      filters.area = ''; currentPage = 1; closePopover(); render();
+    };
+  } else if (kind === 'grade') {
+    const opts = sortedGrades.map(g => `<option value="${esc(g)}" ${g === filters.grade.value ? 'selected' : ''}>${esc(g)}</option>`).join('');
+    pop.innerHTML = `
+      <div class="row">
+        <select id="popGradeOp">
+          <option value="=" ${filters.grade.op === '=' ? 'selected' : ''}>=</option>
+          <option value=">=" ${filters.grade.op === '>=' ? 'selected' : ''}>≥</option>
+          <option value="<=" ${filters.grade.op === '<=' ? 'selected' : ''}>≤</option>
+        </select>
+        <select id="popGradeVal">
+          <option value="">—</option>
+          ${opts}
+        </select>
+      </div>
+      <div class="actions">
+        <button type="button" id="popClear">Clear</button>
+        <button type="button" class="primary" id="popApply">Apply</button>
+      </div>
+    `;
+    th.appendChild(pop);
+    openPopover = pop;
+    pop.querySelector('#popGradeVal').focus();
+    pop.querySelector('#popApply').onclick = () => {
+      filters.grade.op = pop.querySelector('#popGradeOp').value;
+      filters.grade.value = pop.querySelector('#popGradeVal').value;
+      currentPage = 1; closePopover(); render();
+    };
+    pop.querySelector('#popClear').onclick = () => {
+      filters.grade.value = ''; filters.grade.op = '=';
+      currentPage = 1; closePopover(); render();
+    };
+  } else if (kind === 'ascents') {
+    pop.innerHTML = `
+      <div class="row">
+        <span style="align-self:center; font-size:0.85rem;">≥</span>
+        <input type="number" id="popAscentsInput" min="0" placeholder="min ascents" value="${esc(filters.ascents)}">
+      </div>
+      <div class="actions">
+        <button type="button" id="popClear">Clear</button>
+        <button type="button" class="primary" id="popApply">Apply</button>
+      </div>
+    `;
+    th.appendChild(pop);
+    openPopover = pop;
+    const input = pop.querySelector('#popAscentsInput');
+    input.focus();
+    input.select();
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { filters.ascents = input.value.trim(); currentPage = 1; closePopover(); render(); }
+      if (e.key === 'Escape') closePopover();
+    });
+    pop.querySelector('#popApply').onclick = () => {
+      filters.ascents = input.value.trim(); currentPage = 1; closePopover(); render();
+    };
+    pop.querySelector('#popClear').onclick = () => {
+      filters.ascents = ''; currentPage = 1; closePopover(); render();
+    };
+  }
+}
+
+function gradeActive() { return filters.grade.value !== ''; }
+function areaActive() { return filters.area !== ''; }
+function ascentsActive() { return filters.ascents !== '' && !isNaN(Number(filters.ascents)); }
+
+function renderPagination(totalPages) {
+  if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+  paginationEl.innerHTML = `
+    <button id="firstPage" ${currentPage === 1 ? 'disabled' : ''}>« First</button>
+    <button id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>
+    <span class="page-info">Page ${currentPage} of ${totalPages}</span>
+    <button id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>Next ›</button>
+    <button id="lastPage" ${currentPage === totalPages ? 'disabled' : ''}>Last »</button>
+  `;
+  document.getElementById('firstPage').onclick = () => { currentPage = 1; render(); };
+  document.getElementById('prevPage').onclick = () => { currentPage--; render(); };
+  document.getElementById('nextPage').onclick = () => { currentPage++; render(); };
+  document.getElementById('lastPage').onclick = () => { currentPage = totalPages; render(); };
+}
 
 function updateHeaders() {
   headers.forEach(th => {
     const key = th.dataset.sort;
     th.classList.toggle('sort-active', key === sortKey);
     const arrow = th.querySelector('.arrow');
-    if (key === sortKey) {
-      arrow.textContent = sortAsc ? '▲' : '▼';
-    } else {
-      arrow.textContent = '';
+    if (key === sortKey) arrow.textContent = sortAsc ? '▲' : '▼';
+    else arrow.textContent = '';
+
+    const filterKind = th.dataset.filter;
+    if (filterKind) {
+      const active =
+        (filterKind === 'area' && areaActive()) ||
+        (filterKind === 'grade' && gradeActive()) ||
+        (filterKind === 'ascents' && ascentsActive());
+      th.classList.toggle('filter-active', active);
     }
   });
 }
 
+function gradeNumFor(gradeStr) {
+  const b = boulders.find(x => x.g === gradeStr);
+  return b ? b.gn : null;
+}
+
 function render() {
   const q = searchEl.value.toLowerCase().trim();
+  const areaExact = filters.area;
+  const gradeGn = gradeActive() ? gradeNumFor(filters.grade.value) : null;
+  const minAscents = ascentsActive() ? Number(filters.ascents) : null;
+
   filtered = boulders.filter(b => {
+    if (areaExact && b.c !== areaExact) return false;
+    if (gradeGn !== null) {
+      if (filters.grade.op === '=' && b.gn !== gradeGn) return false;
+      if (filters.grade.op === '>=' && b.gn < gradeGn) return false;
+      if (filters.grade.op === '<=' && b.gn > gradeGn) return false;
+    }
+    if (minAscents !== null && b.a < minAscents) return false;
     if (!q) return true;
     return b.n.toLowerCase().includes(q) || b.c.toLowerCase().includes(q);
   });
@@ -115,7 +377,6 @@ function render() {
     let va, vb;
     if (sortKey === 'az') { va = Math.abs(a.z); vb = Math.abs(b.z); }
     else                   { va = a[sortKey]; vb = b[sortKey]; }
-
     if (typeof va === 'string') {
       return sortAsc ? vb.localeCompare(va) : va.localeCompare(vb);
     }
@@ -123,11 +384,27 @@ function render() {
   };
   filtered.sort(cmp);
 
-  const shown = filtered.slice(0, MAX_SHOWN);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const shown = filtered.slice(start, start + PAGE_SIZE);
+
   const colLabels = { az: '|z|', n: 'name', c: 'area', gn: 'grade', e: 'elo', lo: 'elo lo', hi: 'elo hi', r: 'residual', z: 'z-score', a: 'ascents' };
-  stats.textContent = q
-    ? `${filtered.length} matches for "${q}" — showing ${shown.length}, sorted by ${colLabels[sortKey] || sortKey} ${sortAsc ? '↑' : '↓'}`
-    : `${filtered.length} boulders — showing top ${shown.length} by ${colLabels[sortKey] || sortKey} ${sortAsc ? '↑' : '↓'}`;
+  const sortDesc = `${colLabels[sortKey] || sortKey} ${sortAsc ? '↑' : '↓'}`;
+  const rangeDesc = filtered.length === 0
+    ? '0 results'
+    : `${start + 1}–${start + shown.length} of ${filtered.length}`;
+  const opSym = { '=': '=', '>=': '≥', '<=': '≤' };
+  const filterDesc = [
+    q ? `"${q}"` : null,
+    gradeActive() ? `grade ${opSym[filters.grade.op]} ${filters.grade.value}` : null,
+    areaActive() ? `area "${filters.area}"` : null,
+    ascentsActive() ? `ascents ≥ ${filters.ascents}` : null,
+  ].filter(Boolean).join(', ');
+  stats.textContent = filterDesc
+    ? `${rangeDesc} matching ${filterDesc} — sorted by ${sortDesc}`
+    : `${rangeDesc} boulders — sorted by ${sortDesc}`;
 
   tbody.innerHTML = shown.map(b => {
     const zCls = b.z < -0.01 ? 'z-neg' : b.z > 0.01 ? 'z-pos' : 'z-zero';
@@ -146,38 +423,48 @@ function render() {
   }).join('');
 
   updateHeaders();
-}
-
-function esc(s) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(s));
-  return div.innerHTML;
+  renderPagination(totalPages);
 }
 
 headers.forEach(th => {
-  th.addEventListener('click', () => {
+  const sortArea = th.querySelector('.sort-area');
+  sortArea.addEventListener('click', () => {
     const key = th.dataset.sort;
-    if (sortKey === key) {
-      sortAsc = !sortAsc;
-    } else {
-      sortKey = key;
-      sortAsc = false;
-    }
+    if (sortKey === key) sortAsc = !sortAsc;
+    else { sortKey = key; sortAsc = false; }
+    currentPage = 1;
     render();
   });
+  const filterBtn = th.querySelector('.filter-btn');
+  if (filterBtn) {
+    filterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const kind = th.dataset.filter;
+      if (openPopover && th.contains(openPopover)) {
+        closePopover();
+      } else {
+        openFilterPopover(th, kind);
+      }
+    });
+  }
 });
 
 let debounceTimer;
 searchEl.addEventListener('input', () => {
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(render, 100);
+  debounceTimer = setTimeout(() => { currentPage = 1; render(); }, 100);
 });
 
-// Load
 fetch('boulders.json')
   .then(r => r.json())
   .then(data => {
     boulders = data;
+    const seen = new Set();
+    sortedGrades = [];
+    boulders.slice().sort((a, b) => a.gn - b.gn).forEach(b => {
+      if (!seen.has(b.g)) { seen.add(b.g); sortedGrades.push(b.g); }
+    });
+    sortedAreas = [...new Set(boulders.map(b => b.c))].sort((a, b) => a.localeCompare(b));
     render();
   })
   .catch(() => {
