@@ -31,12 +31,13 @@
 <body>
   <div class="min-h-screen flex justify-center overflow-x-hidden">
     <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-4xl w-full min-w-0">
-      <div class="flex flex-row flex-wrap items-baseline justify-between gap-4 sm:gap-6 mb-6">
+      <div class="flex flex-row flex-wrap items-baseline justify-between gap-4 sm:gap-6 mb-2">
         <h1 class="font-serif text-3xl sm:text-5xl">Inferring Boulder Grades</h1>
         <nav class="flex flex-row gap-4 font-serif text-sm">
           <a class="underline hover:no-underline" href="../">Home</a>
         </nav>
       </div>
+      <p class="font-serif text-sm text-gray-500 mb-6">July 13, 2026</p>
 
       <article class="font-serif text-lg leading-relaxed space-y-6">
 
@@ -59,8 +60,8 @@
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">The data</h2>
           <p>
-            The model is trained on <strong>~1.36 million ascent logs</strong> scraped from public climbing
-            databases, covering <strong>~185,000 boulders</strong> across thousands of crags, attempted by
+            The model is trained on <strong>~1.5 million ascent logs</strong> scraped from public climbing
+            databases, covering <strong>~50,500 boulders</strong> across thousands of crags, attempted by
             <strong>~31,000 climbers</strong>. Each log records who climbed what, and whether they
             <em>flashed</em> (sent first try), <em>sent</em> (after multiple attempts), or just <em>tried</em> (logged
             an attempt without success).
@@ -69,8 +70,8 @@
             For every observed (climber, boulder) pair, we also sample <em>negative</em> observations: boulders in
             crags the climber visited but didn&rsquo;t log. These negatives are ambiguous — they could mean
             &ldquo;didn&rsquo;t try&rdquo; or &ldquo;tried and failed but didn&rsquo;t log it&rdquo; — and the
-            model explicitly handles this ambiguity. In total, the dataset has about 60K positive samples and
-            600K negatives (subsampled 10:1 during training).
+            model explicitly handles this ambiguity. During training, negatives are subsampled at a
+            10:1 negative-to-positive ratio.
           </p>
         </section>
 
@@ -137,7 +138,7 @@
             With ~82,000 latent parameters and millions of observations, MCMC would be impractical. The
             model is fit via <strong>Automatic Differentiation Variational Inference (ADVI)</strong> with a
             full-rank Gaussian approximation, using minibatch stochastic optimization. Training ran for
-            2 million iterations with the Adam optimizer (lr = 0.003, batch size = 4,096). After
+            500,000 iterations with the Adam optimizer (lr = 0.003, batch size = 4,096). After
             convergence, 3,000 posterior draws were sampled to produce credible intervals for every estimate.
           </p>
           <p>
@@ -156,15 +157,14 @@
           </p>
 
           <figure>
-            <img src="predicted-vs-real.png" alt="Predicted difficulty (Elo) on the y-axis vs real V-grade on the x-axis. A line connects weighted medians for each V-grade, weighted by ascent count. R²=0.75.">
-            <figcaption>Forecasted difficulty $d_j$ (Elo) vs. real V-grade. The line connects the weighted median predicted difficulty for each grade, weighted by number of ascents. The model recovers a strong linear signal from ascent patterns alone.</figcaption>
+            <img src="predicted-vs-real.webp" alt="Predicted difficulty (Elo) on the y-axis vs real V-grade on the x-axis. Dots are sized by number of logged ascents. A line connects weighted medians for each V-grade, weighted by ascent count. R²=0.75.">
+            <figcaption>Forecasted difficulty $d_j$ (Elo) vs. real V-grade. Each dot is a boulder, sized by its number of logged ascents. The line connects the weighted median predicted difficulty for each grade, weighted by number of ascents. The model recovers a strong linear signal from ascent patterns alone.</figcaption>
           </figure>
 
           <p>
             But the deviations are the interesting part. Dots that sit above the median line for
             their grade are <strong>sandbags</strong> — harder than the consensus suggests. Those
-            below are <strong>soft touches</strong>. These residuals aren&rsquo;t random: they tend
-            to cluster by area. Some crags consistently grade conservatively, others generously.
+            below are <strong>soft touches</strong>.
           </p>
         </section>
 
@@ -173,7 +173,7 @@
           <h2 class="font-serif text-2xl">Popular boulders, inflated grades</h2>
 
           <figure>
-            <img src="popularity-vs-difficulty.png" alt="Forecasted popularity on the y-axis vs forecasted difficulty on the x-axis. Dots are colored by consensus grade and sized by number of ascents.">
+            <img src="popularity-vs-difficulty.webp" alt="Forecasted popularity on the y-axis vs forecasted difficulty on the x-axis. Dots are colored by consensus grade and sized by number of ascents.">
             <figcaption>Forecasted popularity $\pi_j$ vs. forecasted difficulty $d_j$. Each dot is a boulder: color is the consensus grade, size is the number of logged ascents.</figcaption>
           </figure>
 
@@ -193,46 +193,87 @@
           <p>
             The model has never seen a competition result, a podium, or a name. It only knows ascent
             logs. Yet when we rank climbers by posterior ability $\theta_i$, the top of the list
-            reads like a who&rsquo;s-who of professional bouldering:
+            reads like a who&rsquo;s-who of professional bouldering. The ranking uses the
+            <em>lower bound</em> of the 95% credible interval, not the posterior mean — a climber
+            with few logged ascents needs an exceptional record to rank high, because the model
+            is less certain about them.
           </p>
 
           <table class="basic">
             <thead>
-              <tr><th>Rank</th><th>Climber</th><th>Ability</th><th>Ascents logged</th></tr>
+              <tr><th>Rank</th><th>Climber</th><th>Ability</th><th>95% low</th><th>Ascents logged</th></tr>
             </thead>
             <tbody>
-              <tr><td>1</td><td>Jules Marchaland</td><td>4.29</td><td>53</td></tr>
-              <tr><td>2</td><td>Noah Wheeler</td><td>4.05</td><td>93</td></tr>
-              <tr><td>3</td><td>Vadim Timonov</td><td>4.04</td><td>166</td></tr>
-              <tr><td>4</td><td>Andrew Nimmer</td><td>3.86</td><td>336</td></tr>
-              <tr><td>5</td><td>Kali Tolsma</td><td>3.81</td><td>23</td></tr>
-              <tr><td>6</td><td>Mejdi Schalck</td><td>3.73</td><td>53</td></tr>
-              <tr><td>7</td><td>William Bosi</td><td>3.72</td><td>41</td></tr>
-              <tr><td>8</td><td>Matt Fultz</td><td>3.72</td><td>371</td></tr>
-              <tr><td>9</td><td>Adam Ondra</td><td>3.70</td><td>156</td></tr>
-              <tr><td>10</td><td>Yannick Flohé</td><td>3.64</td><td>54</td></tr>
-              <tr><td>11</td><td>Nimrod Marcus</td><td>3.63</td><td>50</td></tr>
-              <tr><td>12</td><td>Solomon Kemball</td><td>3.58</td><td>45</td></tr>
-              <tr><td>13</td><td>Pietro Vidi</td><td>3.52</td><td>180</td></tr>
-              <tr><td>14</td><td>Illya Bakhmet-Smolenskyi</td><td>3.51</td><td>31</td></tr>
-              <tr><td>15</td><td>Jakob Schubert</td><td>3.42</td><td>96</td></tr>
-              <tr><td>16</td><td>James Webb</td><td>3.41</td><td>916</td></tr>
-              <tr><td>17</td><td>Keita Mogaki</td><td>3.44</td><td>91</td></tr>
-              <tr><td>18</td><td>Piotr Schab</td><td>3.44</td><td>154</td></tr>
-              <tr><td>19</td><td>Daniel Woods</td><td>3.38</td><td>560</td></tr>
-              <tr><td>20</td><td>David Firnenburg</td><td>3.38</td><td>393</td></tr>
+              <tr><td>1</td><td>Jules Marchaland</td><td>4.29</td><td>4.11</td><td>53</td></tr>
+              <tr><td>2</td><td>Vadim Timonov</td><td>4.04</td><td>3.89</td><td>166</td></tr>
+              <tr><td>3</td><td>Noah Wheeler</td><td>4.05</td><td>3.85</td><td>93</td></tr>
+              <tr><td>4</td><td>Andrew Nimmer</td><td>3.86</td><td>3.73</td><td>336</td></tr>
+              <tr><td>5</td><td>Matt Fultz</td><td>3.72</td><td>3.64</td><td>371</td></tr>
+              <tr><td>6</td><td>Mejdi Schalck</td><td>3.73</td><td>3.55</td><td>53</td></tr>
+              <tr><td>7</td><td>Adam Ondra</td><td>3.70</td><td>3.55</td><td>156</td></tr>
+              <tr><td>8</td><td>William Bosi</td><td>3.72</td><td>3.55</td><td>41</td></tr>
+              <tr><td>9</td><td>Kali Tolsma</td><td>3.81</td><td>3.47</td><td>23</td></tr>
+              <tr><td>10</td><td>Fabrice Landry</td><td>3.72</td><td>3.44</td><td>334</td></tr>
+              <tr><td>11</td><td>Pietro Vidi</td><td>3.52</td><td>3.41</td><td>180</td></tr>
+              <tr><td>12</td><td>Yannick Flohé</td><td>3.64</td><td>3.40</td><td>54</td></tr>
+              <tr><td>13</td><td>Nimrod Marcus</td><td>3.63</td><td>3.37</td><td>50</td></tr>
+              <tr><td>14</td><td>James Webb</td><td>3.41</td><td>3.36</td><td>916</td></tr>
+              <tr><td>15</td><td>David Firnenburg</td><td>3.38</td><td>3.32</td><td>393</td></tr>
+              <tr><td>16</td><td>Thilo Jeldriksønn</td><td>3.45</td><td>3.32</td><td>159</td></tr>
+              <tr><td>17</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
+              <tr><td>18</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
+              <tr><td>19</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
+              <tr><td>20</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
             </tbody>
           </table>
 
           <p>
-            This is remarkably good signal. Jules Marchaland — World Cup finalist — tops the list with only 53 logged ascents. Ondra, Bosi, Schalck, Schubert, Woods, Hojer: the model recovers the pro circuit from
-            nothing but tick lists. Ability and prolificity are cleanly separated: James Webb and Daniel
+            This is remarkably good signal. Jules Marchaland — World Cup finalist — tops the list with
+            only 53 logged ascents. Ondra, Bosi, Schalck, Fultz, Flohé: the model recovers the pro
+            circuit from nothing but tick lists, and Daniel Woods, Jakob Schubert, and Jan Hojer sit
+            just outside the top 20. Notice Kali Tolsma: the highest posterior mean after the top three,
+            but with only 23 logged ascents the credible interval is wide, and the ranking appropriately
+            demotes them. Ability and prolificity are cleanly separated too: James Webb and Daniel
             Woods have logged hundreds of ascents (high $\alpha_i$) but their ability estimates are
             appropriately adjusted rather than inflated.
           </p>
         </section>
 
-        <!-- 8. Browse -->
+        <!-- 8. Hardest boulders -->
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">The hardest boulders</h2>
+          <p>
+            The same trick works for boulders. Ranking by the lower bound of the difficulty
+            credible interval, these are the problems the model is most confident are hard —
+            shown with their community grade and the model&rsquo;s predicted V-grade:
+          </p>
+
+          <table class="basic">
+            <thead>
+              <tr><th>Rank</th><th>Boulder</th><th>Area</th><th>Grade</th><th>Predicted</th><th>Ascents</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Power of Now</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V15.8</td><td>26</td></tr>
+              <tr><td>2</td><td>Foxy Lady (dyno)</td><td>Magic Wood</td><td>8A (V11)</td><td>V15.2</td><td>33</td></tr>
+              <tr><td>3</td><td>Never ending story 1</td><td>Magic Wood</td><td>8A+ (V12)</td><td>V15.0</td><td>32</td></tr>
+              <tr><td>4</td><td>Ephyra</td><td>Chironico</td><td>8C+ (V16)</td><td>V15.6</td><td>7</td></tr>
+              <tr><td>5</td><td>Never ending story 2</td><td>Magic Wood</td><td>8A (V11)</td><td>V14.6</td><td>84</td></tr>
+              <tr><td>6</td><td>White Stripe</td><td>Brione</td><td>8A+ (V12)</td><td>V15.1</td><td>10</td></tr>
+              <tr><td>7</td><td>Mystic Stylez</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V14.6</td><td>29</td></tr>
+              <tr><td>8</td><td>Pagan Poetry Low</td><td>Left Fork</td><td>8B (V13)</td><td>V14.5</td><td>42</td></tr>
+              <tr><td>9</td><td>Direct North</td><td>Buttermilks</td><td>8B+ (V14)</td><td>V14.6</td><td>34</td></tr>
+              <tr><td>10</td><td>The Mandala Sit</td><td>Buttermilks</td><td>8B (V13)</td><td>V14.4</td><td>42</td></tr>
+            </tbody>
+          </table>
+
+          <p>
+            Note what the list is <em>not</em>: it&rsquo;s not simply the highest-graded problems in the
+            dataset. Foxy Lady, graded 8A, ranks second — the model predicts it climbs more like V15.
+            Only people who consistently send far harder problems ever manage it.
+          </p>
+        </section>
+
+        <!-- 9. Browse -->
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">Explore the results</h2>
           <p>
@@ -246,7 +287,7 @@
           </p>
         </section>
 
-        <!-- 9. Caveats -->
+        <!-- 10. Caveats -->
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">Caveats &amp; what&rsquo;s next</h2>
           <p>
