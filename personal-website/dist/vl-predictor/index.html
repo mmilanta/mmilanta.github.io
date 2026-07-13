@@ -3,37 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VL Predictor — Boulder Lookup</title>
+  <title>Boulder Grade Predictor</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8f9fa; color: #212529; line-height: 1.5;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      background: #fff; color: #000; line-height: 1.5;
     }
-    .container { max-width: 100%; margin: 0 auto; padding: 2rem 1rem; }
-    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .container { max-width: 100%; margin: 0 auto; padding: 2.5rem 1rem; }
+    .header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.25rem; }
+    h1 { font-size: 1.875rem; font-weight: 400; }
+    .header nav { font-size: 0.875rem; display: flex; gap: 1rem; }
+    .header nav a { color: #000; text-decoration: underline; }
+    .header nav a:hover { text-decoration: none; }
     .subtitle { color: #6c757d; font-size: 0.875rem; margin-bottom: 1.5rem; }
 
     .controls { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .controls input {
-      padding: 0.5rem 0.75rem; border: 1px solid #ced4da; border-radius: 6px;
-      font-size: 0.875rem; outline: none; background: #fff; flex: 1 1 240px;
+      padding: 0.5rem 0.75rem; border: 1px solid #dee2e6; border-radius: 6px;
+      font-size: 0.875rem; font-family: inherit; outline: none; background: #fff; flex: 1 1 240px;
     }
-    .controls input:focus { border-color: #4dabf7; box-shadow: 0 0 0 2px rgba(77,171,247,0.2); }
+    .controls input:focus { border-color: #495057; box-shadow: 0 0 0 2px rgba(73,80,87,0.15); }
 
     .stats { font-size: 0.8125rem; color: #6c757d; margin-bottom: 1rem; }
 
     .pagination { display: flex; align-items: center; gap: 0.5rem; margin-top: 1rem; font-size: 0.875rem; flex-wrap: wrap; }
     .pagination button {
-      padding: 0.35rem 0.7rem; border: 1px solid #ced4da; border-radius: 6px;
-      background: #fff; cursor: pointer; font-size: 0.875rem;
+      padding: 0.35rem 0.7rem; border: 1px solid #dee2e6; border-radius: 6px;
+      background: #fff; cursor: pointer; font-size: 0.875rem; font-family: inherit;
     }
     .pagination button:hover:not(:disabled) { background: #e9ecef; }
     .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
     .pagination .page-info { color: #6c757d; }
 
     .table-wrap { overflow-x: auto; position: relative; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
     th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 2px solid #dee2e6; font-weight: 600;
          color: #495057; white-space: nowrap; user-select: none; position: relative; }
     th .sort-area { cursor: pointer; }
@@ -48,9 +52,9 @@
     }
     th .filter-btn svg { display: block; }
     th .filter-btn:hover { background: #e9ecef; color: #495057; }
-    th.filter-active .filter-btn { color: #1971c2; background: #d0ebff; }
+    th.filter-active .filter-btn { color: #212529; background: #e9ecef; }
     td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e9ecef; white-space: nowrap; }
-    tr:hover td { background: #f1f3f5; }
+    tr:hover td { background: #f8f9fa; }
     .name { font-weight: 500; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
     .z-neg { color: #1971c2; font-weight: 500; }
     .z-pos { color: #c92a2a; font-weight: 500; }
@@ -61,28 +65,28 @@
 
     .filter-popover {
       position: absolute; z-index: 10; top: 100%; left: 0;
-      background: #fff; border: 1px solid #ced4da; border-radius: 6px;
+      background: #fff; border: 1px solid #dee2e6; border-radius: 6px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       padding: 0.6rem; font-weight: 400; color: #212529;
       display: flex; flex-direction: column; gap: 0.5rem; min-width: 200px;
     }
     .filter-popover .row { display: flex; gap: 0.35rem; }
     .filter-popover input, .filter-popover select {
-      padding: 0.35rem 0.5rem; border: 1px solid #ced4da; border-radius: 4px;
-      font-size: 0.85rem; outline: none; background: #fff;
+      padding: 0.35rem 0.5rem; border: 1px solid #dee2e6; border-radius: 4px;
+      font-size: 0.85rem; font-family: inherit; outline: none; background: #fff;
     }
     .filter-popover input:focus, .filter-popover select:focus {
-      border-color: #4dabf7; box-shadow: 0 0 0 2px rgba(77,171,247,0.2);
+      border-color: #495057; box-shadow: 0 0 0 2px rgba(73,80,87,0.15);
     }
     .filter-popover input { flex: 1; min-width: 0; }
     .filter-popover .actions { display: flex; gap: 0.35rem; justify-content: flex-end; }
     .filter-popover button {
-      padding: 0.3rem 0.6rem; border: 1px solid #ced4da; border-radius: 4px;
-      background: #fff; cursor: pointer; font-size: 0.8rem;
+      padding: 0.3rem 0.6rem; border: 1px solid #dee2e6; border-radius: 4px;
+      background: #fff; cursor: pointer; font-size: 0.8rem; font-family: inherit;
     }
     .filter-popover button:hover { background: #e9ecef; }
-    .filter-popover button.primary { background: #228be6; color: #fff; border-color: #228be6; }
-    .filter-popover button.primary:hover { background: #1c7ed6; }
+    .filter-popover button.primary { background: #212529; color: #fff; border-color: #212529; }
+    .filter-popover button.primary:hover { background: #495057; }
     .filter-popover .combo-list {
       max-height: 200px; overflow-y: auto; border: 1px solid #e9ecef;
       border-radius: 4px; background: #fff;
@@ -91,8 +95,8 @@
       padding: 0.3rem 0.5rem; font-size: 0.85rem; cursor: pointer;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .filter-popover .combo-item:hover, .filter-popover .combo-item.active { background: #e7f5ff; }
-    .filter-popover .combo-item.selected { background: #d0ebff; font-weight: 500; }
+    .filter-popover .combo-item:hover, .filter-popover .combo-item.active { background: #f1f3f5; }
+    .filter-popover .combo-item.selected { background: #e9ecef; font-weight: 500; }
     .filter-popover .combo-empty { padding: 0.4rem 0.5rem; font-size: 0.8rem; color: #868e96; }
 
     @media (max-width: 600px) {
@@ -103,7 +107,13 @@
 </head>
 <body>
 <div class="container">
-  <h1>VL Predictor</h1>
+  <div class="header">
+    <h1>Boulder Grade Predictor</h1>
+    <nav>
+      <a href="../">Home</a>
+      <a href="../boulder-grades/">Blog post</a>
+    </nav>
+  </div>
   <p class="subtitle">Boulder grades inferred from 1M+ ascent logs — residuals vs grade median</p>
 
   <div class="controls">
