@@ -20,26 +20,52 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <script type="module" crossorigin src="/assets/optimalTennisMatch-C7SV7JFR.js"></script>
+  <script type="module" crossorigin src="/assets/optimalTennisMatch-1WtMKoP9.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/chart-BYGrh8Gb.js">
-  <link rel="stylesheet" crossorigin href="/assets/styles-DittEQpJ.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-CgbiQNPr.css">
 </head>
 
 <body>
-  <div class="min-h-screen flex justify-center overflow-x-hidden">
-    <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-4xl w-full min-w-0">
-      <div class="flex flex-row flex-wrap items-baseline justify-between gap-4 sm:gap-6 mb-2">
-        <h1 class="font-serif text-3xl sm:text-5xl">Optimal Tennis Match</h1>
-        <nav class="flex flex-row gap-4 font-serif text-sm">
+  <div class="min-h-screen flex justify-center">
+    <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-7xl w-full min-w-0 lg:grid lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-10">
+      <aside class="font-serif text-sm mb-6 lg:mb-0 lg:sticky lg:top-10 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
+        <div>
           <a class="underline hover:no-underline" href="../">Home</a>
-        </nav>
+          <nav class="hidden lg:block mt-6 text-gray-600" aria-label="Table of contents">
+            <ul class="space-y-3 border-l border-gray-200 pl-4">
+              <li><a class="hover:text-black" href="#federer">The paradox of Federer&rsquo;s success</a></li>
+              <li><a class="hover:text-black" href="#two-point-tiebreaker">A 2-point tiebreaker</a></li>
+              <li><a class="hover:text-black" href="#complex-structures">Complex game structures</a></li>
+              <li>
+                <a class="hover:text-black" href="#playing-tennis-right">Are we playing tennis right?</a>
+                <ul class="mt-2 ml-3 space-y-2 text-[0.8rem]">
+                  <li><a class="hover:text-black" href="#fairness">Fairness</a></li>
+                  <li><a class="hover:text-black" href="#match-length">Match length</a></li>
+                  <li><a class="hover:text-black" href="#tradeoff">The trade-off</a></li>
+                </ul>
+              </li>
+              <li>
+                <a class="hover:text-black" href="#optimal-match">The optimal tennis match</a>
+                <ul class="mt-2 ml-3 space-y-2 text-[0.8rem]">
+                  <li><a class="hover:text-black" href="#theorem">The theorem</a></li>
+                </ul>
+              </li>
+              <li><a class="hover:text-black" href="#conclusion">Conclusion</a></li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="min-w-0">
+      <div class="mb-2">
+        <h1 class="font-serif text-3xl sm:text-5xl">Optimal Tennis Match</h1>
       </div>
       <p class="font-serif text-sm text-gray-500 mb-6">February 12, 2026</p>
 
       <article class="font-serif text-lg leading-relaxed space-y-6">
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The Paradox of Federer&apos;s Success</h2>
+          <h2 id="federer" class="font-serif text-2xl scroll-mt-10">The Paradox of Federer&apos;s Success</h2>
           <p>
             Roger Federer, one of the greatest tennis players in history, once mentioned in a speech that he won
             only about <strong>54% of the points</strong> he played. This statement may seem paradoxical: how can a
@@ -53,7 +79,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Example of a 2-point tiebreaker</h2>
+          <h2 id="two-point-tiebreaker" class="font-serif text-2xl scroll-mt-10">Example of a 2-point tiebreaker</h2>
           <p>
             Let&apos;s consider a simple example. Alex is playing against Bob, and Alex has probability $p$ of beating
             Bob
@@ -92,7 +118,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Complex Game Structures</h2>
+          <h2 id="complex-structures" class="font-serif text-2xl scroll-mt-10">Complex Game Structures</h2>
           <p>
             From here it is natural to go beyond $T_2$ and look at longer tiebreakers or even at the real structure of a
             tennis match, with its somewhat complicated system of games and sets.
@@ -168,7 +194,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Are we playing tennis right?</h2>
+          <h2 id="playing-tennis-right" class="font-serif text-2xl scroll-mt-10">Are we playing tennis right?</h2>
 
           <p>
             While the amplification effect of a tennis match is quite remarkable, this can largely be explained by the fact that a tennis match lasts much longer. For this reason we now look into tiebreakers that lasts roughly as long as a tennis match?
@@ -182,7 +208,7 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Fairness</h2>
+          <h2 id="fairness" class="font-serif text-2xl scroll-mt-10">Fairness</h2>
 
           <p>
             Fairness is our way of quantifying the amplification effect of a match structure.
@@ -213,7 +239,7 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Match length</h2>
+          <h2 id="match-length" class="font-serif text-2xl scroll-mt-10">Match length</h2>
 
           <p>
             While making a match longer amplifies the advantage of the stronger player,
@@ -228,7 +254,7 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The Tradeoff</h2>
+          <h2 id="tradeoff" class="font-serif text-2xl scroll-mt-10">The Tradeoff</h2>
 
           <p>
             We now want to understand the relationship between fairness and match length.
@@ -281,7 +307,7 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section>
-          <h2 class="font-serif text-2xl">The Optimal Tennis Match</h2>
+          <h2 id="optimal-match" class="font-serif text-2xl scroll-mt-10">The Optimal Tennis Match</h2>
 
           <p>
             After some experimentation I devised a match structure that is significantly more efficient.
@@ -314,7 +340,7 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section>
-          <h2 class="font-serif text-2xl">The Theorem</h2>
+          <h2 id="theorem" class="font-serif text-2xl scroll-mt-10">The Theorem</h2>
 
           <p>
             You may have guessed that the name $O_N$ stands for “optimal”.
@@ -336,13 +362,14 @@ A tennis match can technically last forever because of advantages, and on top, h
         </section>
 
         <section>
-          <h2 class="font-serif text-2xl">Conclusion</h2>
+          <h2 id="conclusion" class="font-serif text-2xl scroll-mt-10">Conclusion</h2>
           <p>
             Perhaps we should at least try my proposed optimal tennis match!
             I think it would be great fun (trust me, I tested it with a friend).
           </p>
         </section>
       </article>
+      </main>
     </div>
   </div>
 

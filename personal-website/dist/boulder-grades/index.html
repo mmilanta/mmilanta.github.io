@@ -26,24 +26,53 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/styles-DittEQpJ.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-CgbiQNPr.css">
 </head>
 
 <body>
-  <div class="min-h-screen flex justify-center overflow-x-hidden">
-    <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-4xl w-full min-w-0">
-      <div class="flex flex-row flex-wrap items-baseline justify-between gap-4 sm:gap-6 mb-2">
-        <h1 class="font-serif text-3xl sm:text-5xl">Inferring Boulder Grades</h1>
-        <nav class="flex flex-row gap-4 font-serif text-sm">
+  <div class="min-h-screen flex justify-center">
+    <div class="my-10 mx-4 sm:mx-6 md:mx-10 max-w-7xl w-full min-w-0 lg:grid lg:grid-cols-[14rem_minmax(0,56rem)] lg:gap-10">
+      <aside class="font-serif text-sm mb-6 lg:mb-0 lg:sticky lg:top-10 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto">
+        <div>
           <a class="underline hover:no-underline" href="../">Home</a>
-        </nav>
+          <nav class="hidden lg:block mt-6 text-gray-600" aria-label="Table of contents">
+            <ul class="space-y-3 border-l border-gray-200 pl-4">
+              <li><a class="hover:text-black" href="#problem-with-grades">The problem with grades</a></li>
+              <li>
+                <a class="hover:text-black" href="#mathematical-model">A mathematical model</a>
+                <ul class="mt-2 ml-3 space-y-2 text-[0.8rem]">
+                  <li><a class="hover:text-black" href="#prolificity-popularity">Prolificity and popularity</a></li>
+                  <li><a class="hover:text-black" href="#goldilocks-effect">The Goldilocks effect</a></li>
+                  <li><a class="hover:text-black" href="#flashes">Flashes</a></li>
+                </ul>
+              </li>
+              <li><a class="hover:text-black" href="#going-bayesian">Going Bayesian</a></li>
+              <li><a class="hover:text-black" href="#training">Training at scale</a></li>
+              <li>
+                <a class="hover:text-black" href="#results">Results</a>
+                <ul class="mt-2 ml-3 space-y-2 text-[0.8rem]">
+                  <li><a class="hover:text-black" href="#difficulty-popularity">Difficulty and popularity</a></li>
+                  <li><a class="hover:text-black" href="#climber-ability">Climber ability</a></li>
+                  <li><a class="hover:text-black" href="#boulder-difficulty">Boulder difficulty</a></li>
+                  <li><a class="hover:text-black" href="#explore">Explore the disagreements</a></li>
+                </ul>
+              </li>
+              <li><a class="hover:text-black" href="#limitations">What the model cannot know</a></li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+
+      <main class="min-w-0">
+      <div class="mb-2">
+        <h1 class="font-serif text-3xl sm:text-5xl">Inferring Boulder Grades</h1>
       </div>
       <p class="font-serif text-sm text-gray-500 mb-6">July 13, 2026</p>
 
       <article class="font-serif text-lg leading-relaxed space-y-6">
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The problem with grades</h2>
+          <h2 id="problem-with-grades" class="font-serif text-2xl scroll-mt-10">The problem with grades</h2>
           <p>
             Every boulder problem carries a grade&mdash;a single number meant to capture how hard the climb is.
             The first ascensionist proposes one, later climbers agree or disagree, and the consensus drifts over the years.
@@ -64,7 +93,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">A mathematical model of bouldering</h2>
+          <h2 id="mathematical-model" class="font-serif text-2xl scroll-mt-10">A mathematical model of bouldering</h2>
           <p>
             Let $\mathcal{B}=\{b_1,\ldots,b_n\}$ be the set of boulders and
             $\mathcal{C}=\{c_1,\ldots,c_m\}$ the set of climbers. At first sight, each record is just a pair
@@ -98,7 +127,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">Prolificity and popularity</h3>
+          <h3 id="prolificity-popularity" class="font-serif text-xl scroll-mt-10">Prolificity and popularity</h3>
           <p>To separate strength from opportunity, we introduce two more hidden quantities:</p>
           <ul class="list-disc pl-6 space-y-2">
             <li><strong>climber prolificity</strong> ($\alpha_i$)&mdash;how likely a climber is to try things at all;</li>
@@ -115,7 +144,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">The Goldilocks effect</h3>
+          <h3 id="goldilocks-effect" class="font-serif text-xl scroll-mt-10">The Goldilocks effect</h3>
           <p>
             Climbers do not sample rock uniformly. Beginners generally do not pull onto 8Cs, but elite climbers also
             do not spend their day collecting every 4 in the forest. We tend to choose problems in a window around our
@@ -130,7 +159,7 @@
             a broad range. The offset $\mu_i$ moves the centre of that window for each climber. Both are learned from
             the data, rather than fixed by hand.
           </p>
-          <h3 class="font-serif text-xl pt-2">Flashes</h3>
+          <h3 id="flashes" class="font-serif text-xl pt-2 scroll-mt-10">Flashes</h3>
           <p>
             Flashes provide a second, particularly informative test of the ability&ndash;difficulty gap:
           </p>
@@ -149,7 +178,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Going Bayesian</h2>
+          <h2 id="going-bayesian" class="font-serif text-2xl scroll-mt-10">Going Bayesian</h2>
           <p>
             A point estimate would let me rank boulders, but it would hide the most important qualifier: how sure are
             we? One obscure problem with two very strong ascensionists might look impossibly hard by accident. A classic
@@ -167,7 +196,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Training at scale</h2>
+          <h2 id="training" class="font-serif text-2xl scroll-mt-10">Training at scale</h2>
           <p>
             The raw public data contain about <strong>1.36 million ascent records</strong> and metadata for roughly
             185,000 boulders. After restricting the analysis to boulders with usable ascent data, the fitted dataset
@@ -205,7 +234,7 @@
         </section>
 
         <section class="space-y-8">
-          <h2 class="font-serif text-2xl">Results</h2>
+          <h2 id="results" class="font-serif text-2xl scroll-mt-10">Results</h2>
 
           <section class="space-y-3">
           <figure>
@@ -226,7 +255,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">Difficulty is not popularity</h3>
+          <h3 id="difficulty-popularity" class="font-serif text-xl scroll-mt-10">Difficulty is not popularity</h3>
           <figure>
             <img src="/assets/popularity-vs-difficulty-iKf0YkdU.webp" alt="Inferred popularity on the y-axis against inferred difficulty on the x-axis. Points are colored by consensus grade and sized by ascents.">
             <figcaption>Inferred popularity $\pi_j$ against inferred difficulty $d_j$. Colour shows community grade and point size shows logged ascents.</figcaption>
@@ -244,7 +273,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">Inferred climber ability</h3>
+          <h3 id="climber-ability" class="font-serif text-xl scroll-mt-10">Inferred climber ability</h3>
           <p>
             The model has not seen competition results, sponsorships, or biographies; it only knows ascent logs.
             Nevertheless, the top of the ability ranking includes many established elite climbers. The ordering below uses the lower
@@ -289,7 +318,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">Inferred boulder difficulty</h3>
+          <h3 id="boulder-difficulty" class="font-serif text-xl scroll-mt-10">Inferred boulder difficulty</h3>
           <p>
             The same ranking can be made for boulders. Again, these are ordered by the lower end of the
             difficulty interval, not the point estimate. &ldquo;Predicted&rdquo; maps latent difficulty back onto the V-scale
@@ -326,7 +355,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="font-serif text-xl">Explore the disagreements</h3>
+          <h3 id="explore" class="font-serif text-xl scroll-mt-10">Explore the disagreements</h3>
           <p>
             Every boulder in the fitted dataset receives an inferred difficulty, a credible interval, and a residual
             from the median boulder at its grade. I built a table where you can search by name or area, filter by grade
@@ -337,7 +366,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">What the model cannot know</h2>
+          <h2 id="limitations" class="font-serif text-2xl scroll-mt-10">What the model cannot know</h2>
           <p>
             The model compresses a great deal of climbing into one ability axis and one difficulty axis. It does not
             know whether a boulder is a slab, a roof, or a paddle dyno. It does not know a climber&rsquo;s height or span,
@@ -361,6 +390,7 @@
         </section>
 
       </article>
+      </main>
     </div>
   </div>
 </body>
