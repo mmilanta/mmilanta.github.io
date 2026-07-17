@@ -26,7 +26,7 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/styles-CgbiQNPr.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-CMpz6knY.css">
 </head>
 
 <body>
@@ -93,7 +93,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 id="mathematical-model" class="font-serif text-2xl scroll-mt-10">A mathematical model of bouldering</h2>
+          <h2 id="mathematical-model" class="font-serif text-2xl scroll-mt-10">A mathematical model</h2>
           <p>
             Let $\mathcal{B}=\{b_1,\ldots,b_n\}$ be the set of boulders and
             $\mathcal{C}=\{c_1,\ldots,c_m\}$ the set of climbers. At first sight, each record is just a pair
@@ -211,25 +211,15 @@
             enormous number of missing pairs from overwhelming the signal.
           </p>
           <p>
-            The community grade is <em>not</em> an input to the likelihood. It is only used afterwards as an external
-            check on what the model learned.
+            Community grades do not enter the likelihood. They are used afterwards to evaluate training checkpoints
+            and to map latent difficulty onto the familiar V-scale. The ordering of boulders is therefore inferred from
+            ascent data, while the displayed predicted V-grades are a post-hoc calibration against community grades.
           </p>
           <p>
-            The model has around <strong>82,000 latent parameters</strong> and millions of potential observations, so
-            conventional Markov chain Monte Carlo would be painfully slow. I used
-            <strong>Automatic Differentiation Variational Inference</strong> (ADVI) instead, approximating the posterior
-            with a full-rank multivariate Gaussian and optimizing it on minibatches of 4,096 observations.
-          </p>
-          <p>
-            Training used Adam with a learning rate of 0.003 and was scheduled for two million iterations. I saved
-            checkpoints throughout and selected the 340,000-iteration checkpoint that performed best on the held-out
-            grade validation, then drew 3,000 samples from its approximate posterior to calculate intervals.
-            Variational inference is an approximation&mdash;especially in the tails&mdash;but it makes a model of this size practical.
-          </p>
-          <p>
-            For validation, I regress the withheld community grade on inferred difficulty, weighting well-travelled
-            boulders more heavily. Difficulty explains <strong>75% of the variance</strong> in grades
-            ($R^2=0.75$).
+            With around <strong>82,000 latent parameters</strong>, conventional Markov chain Monte Carlo would be
+            impractical. I instead fitted a full-rank variational approximation using minibatches, then took 3,000
+            posterior draws to calculate the intervals. As a validation, a weighted regression of community grade on
+            inferred difficulty gives <strong>$R^2=0.75$</strong>.
           </p>
         </section>
 
@@ -255,7 +245,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 id="difficulty-popularity" class="font-serif text-xl scroll-mt-10">Difficulty is not popularity</h3>
+          <h3 id="difficulty-popularity" class="font-serif text-xl scroll-mt-10">Difficulty and popularity</h3>
           <figure>
             <img src="/assets/popularity-vs-difficulty-iKf0YkdU.webp" alt="Inferred popularity on the y-axis against inferred difficulty on the x-axis. Points are colored by consensus grade and sized by ascents.">
             <figcaption>Inferred popularity $\pi_j$ against inferred difficulty $d_j$. Colour shows community grade and point size shows logged ascents.</figcaption>
@@ -273,7 +263,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 id="climber-ability" class="font-serif text-xl scroll-mt-10">Inferred climber ability</h3>
+          <h3 id="climber-ability" class="font-serif text-xl scroll-mt-10">Climber ability</h3>
           <p>
             The model has not seen competition results, sponsorships, or biographies; it only knows ascent logs.
             Nevertheless, the top of the ability ranking includes many established elite climbers. The ordering below uses the lower
@@ -298,11 +288,11 @@
                 <tr><td>13</td><td>Nimrod Marcus</td><td>3.63</td><td>3.37</td><td>50</td></tr>
                 <tr><td>14</td><td>James Webb</td><td>3.41</td><td>3.36</td><td>916</td></tr>
                 <tr><td>15</td><td>David Firnenburg</td><td>3.38</td><td>3.32</td><td>393</td></tr>
-                <tr><td>16</td><td>Thilo Jeldriks&oslash;nn</td><td>3.45</td><td>3.32</td><td>159</td></tr>
-                <tr><td>17</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
-                <tr><td>18</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
-                <tr><td>19</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
-                <tr><td>20</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
+                <tr><td>16</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
+                <tr><td>17</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
+                <tr><td>18</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
+                <tr><td>19</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
+                <tr><td>20</td><td>Daniel Woods</td><td>3.38</td><td>3.28</td><td>560</td></tr>
               </tbody>
             </table>
           </div>
@@ -318,7 +308,7 @@
         </section>
 
         <section class="space-y-3">
-          <h3 id="boulder-difficulty" class="font-serif text-xl scroll-mt-10">Inferred boulder difficulty</h3>
+          <h3 id="boulder-difficulty" class="font-serif text-xl scroll-mt-10">Boulder difficulty</h3>
           <p>
             The same ranking can be made for boulders. Again, these are ordered by the lower end of the
             difficulty interval, not the point estimate. &ldquo;Predicted&rdquo; maps latent difficulty back onto the V-scale

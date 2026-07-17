@@ -211,25 +211,15 @@
             enormous number of missing pairs from overwhelming the signal.
           </p>
           <p>
-            The community grade is <em>not</em> an input to the likelihood. It is only used afterwards as an external
-            check on what the model learned.
+            Community grades do not enter the likelihood. They are used afterwards to evaluate training checkpoints
+            and to map latent difficulty onto the familiar V-scale. The ordering of boulders is therefore inferred from
+            ascent data, while the displayed predicted V-grades are a post-hoc calibration against community grades.
           </p>
           <p>
-            The model has around <strong>82,000 latent parameters</strong> and millions of potential observations, so
-            conventional Markov chain Monte Carlo would be painfully slow. I used
-            <strong>Automatic Differentiation Variational Inference</strong> (ADVI) instead, approximating the posterior
-            with a full-rank multivariate Gaussian and optimizing it on minibatches of 4,096 observations.
-          </p>
-          <p>
-            Training used Adam with a learning rate of 0.003 and was scheduled for two million iterations. I saved
-            checkpoints throughout and selected the 340,000-iteration checkpoint that performed best on the held-out
-            grade validation, then drew 3,000 samples from its approximate posterior to calculate intervals.
-            Variational inference is an approximation&mdash;especially in the tails&mdash;but it makes a model of this size practical.
-          </p>
-          <p>
-            For validation, I regress the withheld community grade on inferred difficulty, weighting well-travelled
-            boulders more heavily. Difficulty explains <strong>75% of the variance</strong> in grades
-            ($R^2=0.75$).
+            With around <strong>82,000 latent parameters</strong>, conventional Markov chain Monte Carlo would be
+            impractical. I instead fitted a full-rank variational approximation using minibatches, then took 3,000
+            posterior draws to calculate the intervals. As a validation, a weighted regression of community grade on
+            inferred difficulty gives <strong>$R^2=0.75$</strong>.
           </p>
         </section>
 
@@ -298,11 +288,11 @@
                 <tr><td>13</td><td>Nimrod Marcus</td><td>3.63</td><td>3.37</td><td>50</td></tr>
                 <tr><td>14</td><td>James Webb</td><td>3.41</td><td>3.36</td><td>916</td></tr>
                 <tr><td>15</td><td>David Firnenburg</td><td>3.38</td><td>3.32</td><td>393</td></tr>
-                <tr><td>16</td><td>Thilo Jeldriks&oslash;nn</td><td>3.45</td><td>3.32</td><td>159</td></tr>
-                <tr><td>17</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
-                <tr><td>18</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
-                <tr><td>19</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
-                <tr><td>20</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
+                <tr><td>16</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
+                <tr><td>17</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
+                <tr><td>18</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
+                <tr><td>19</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
+                <tr><td>20</td><td>Daniel Woods</td><td>3.38</td><td>3.28</td><td>560</td></tr>
               </tbody>
             </table>
           </div>
@@ -312,7 +302,7 @@
             the estimate much more precise. A substantial record can therefore rank above a stronger but less certain estimate.
           </p>
           <p>
-            More broadly, recovering names such as Ondra, Bosi, Schalck, Fultz, Floh&eacute;, and Webb is a useful
+            More broadly, recovering names such as Ondra, Bosi, Woods, Schalck, Fultz, Floh&eacute;, and Webb is a useful
             sanity check. The model was not told who the professionals are; it inferred their ability from their ascent records.
           </p>
         </section>
@@ -329,26 +319,23 @@
               <thead><tr><th>Rank</th><th>Boulder</th><th>Area</th><th>Grade</th><th>Predicted</th><th>Ascents</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Power of Now</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V15.8</td><td>26</td></tr>
-                <tr><td>2</td><td>Foxy Lady (dyno)</td><td>Magic Wood</td><td>8A (V11)</td><td>V15.2</td><td>33</td></tr>
-                <tr><td>3</td><td>Never Ending Story 1</td><td>Magic Wood</td><td>8A+ (V12)</td><td>V15.0</td><td>32</td></tr>
-                <tr><td>4</td><td>Ephyra</td><td>Chironico</td><td>8C+ (V16)</td><td>V15.6</td><td>7</td></tr>
-                <tr><td>5</td><td>Never Ending Story 2</td><td>Magic Wood</td><td>8A (V11)</td><td>V14.6</td><td>84</td></tr>
-                <tr><td>6</td><td>White Stripe</td><td>Brione</td><td>8A+ (V12)</td><td>V15.1</td><td>10</td></tr>
-                <tr><td>7</td><td>Mystic Stylez</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V14.6</td><td>29</td></tr>
-                <tr><td>8</td><td>Pagan Poetry Low</td><td>Left Fork</td><td>8B (V13)</td><td>V14.5</td><td>42</td></tr>
-                <tr><td>9</td><td>Direct North</td><td>Buttermilks</td><td>8B+ (V14)</td><td>V14.6</td><td>34</td></tr>
-                <tr><td>10</td><td>The Mandala Sit</td><td>Buttermilks</td><td>8B (V13)</td><td>V14.4</td><td>42</td></tr>
+                <tr><td>2</td><td>Ephyra</td><td>Chironico</td><td>8C+ (V16)</td><td>V15.6</td><td>7</td></tr>
+                <tr><td>3</td><td>White Stripe</td><td>Brione</td><td>8A+ (V12)</td><td>V15.1</td><td>10</td></tr>
+                <tr><td>4</td><td>Mystic Stylez</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V14.6</td><td>29</td></tr>
+                <tr><td>5</td><td>Pagan Poetry Low</td><td>Left Fork</td><td>8B (V13)</td><td>V14.5</td><td>42</td></tr>
+                <tr><td>6</td><td>Direct North</td><td>Buttermilks</td><td>8B+ (V14)</td><td>V14.6</td><td>34</td></tr>
+                <tr><td>7</td><td>The Mandala Sit</td><td>Buttermilks</td><td>8B (V13)</td><td>V14.4</td><td>42</td></tr>
               </tbody>
             </table>
           </div>
           <p>
-            This is not merely a list of the largest community grades. <em>Foxy Lady (dyno)</em>, listed at 8A,
-            ranks second because the people who log it otherwise have unusually strong records. That is precisely the
+            This is not merely a list of the largest community grades. <em>White Stripe</em>, listed at 8A+,
+            ranks third because the people who log it otherwise have unusually strong records. That is precisely the
             kind of discrepancy the model is designed to expose.
           </p>
           <p>
             The table should not be read as a definitive regrading. Several Magic Wood problems cluster near
-            the top, and large differences such as V11 to V15 may reflect style, selection, data quality,
+            the top, and large differences between published and predicted grades may reflect style, selection, data quality,
             or other modelling limitations rather than four missing grades. The ranking is better treated as a way to ask
             what is unusual about a problem&rsquo;s ascent pattern.
           </p>
