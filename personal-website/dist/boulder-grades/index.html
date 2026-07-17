@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
@@ -9,8 +9,9 @@
     figure { margin: 2rem 0; }
     figure img { width: 100%; border-radius: 6px; border: 1px solid #e9ecef; }
     figcaption { text-align: center; font-size: 0.875rem; color: #6c757d; margin-top: 0.5rem; font-style: italic; }
-    table.basic { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 1.5rem 0; }
-    table.basic th, table.basic td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e9ecef; text-align: left; }
+    .table-wrap { width: 100%; overflow-x: auto; margin: 1.5rem 0; }
+    table.basic { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    table.basic th, table.basic td { padding: 0.4rem 0.75rem; border-bottom: 1px solid #e9ecef; text-align: left; white-space: nowrap; }
     table.basic th { font-weight: 600; color: #495057; border-bottom: 2px solid #dee2e6; }
   </style>
 
@@ -25,7 +26,7 @@
     };
   </script>
   <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/styles-By6-Nrkn.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-DittEQpJ.css">
 </head>
 
 <body>
@@ -41,262 +42,321 @@
 
       <article class="font-serif text-lg leading-relaxed space-y-6">
 
-        <!-- 1. Intro -->
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">The problem with grades</h2>
           <p>
-            Every boulder problem carries a grade — a single number meant to capture how hard the climb is.
-            In practice, grades are noisy. The first ascensionist proposes one, later climbers agree or
-            disagree, and the consensus drifts over the years. Two problems sharing the same grade can feel
-            wildly different, and a &ldquo;soft&rdquo; 7A may be easier than a &ldquo;hard&rdquo; 6C+.
+            Every boulder problem carries a grade&mdash;a single number meant to capture how hard the climb is.
+            The first ascensionist proposes one, later climbers agree or disagree, and the consensus drifts over the years.
+            Two problems with the same grade can feel wildly different, and it is perfectly possible for a
+            &ldquo;soft&rdquo; 7A to be easier than a &ldquo;hard&rdquo; 6C+.
           </p>
           <p>
-            The grade is a label. What we actually want is the underlying <em>difficulty</em> — a
-            continuous, comparable measure that comes from data, not consensus.
+            Some of this is irreducibly personal. A line can suit a climber&rsquo;s height, flexibility, or style.
+            But subjectivity cannot be the whole story: some grades really do seem wrong. Most climbers have met a
+            supposed warm-up that became the session&rsquo;s project, or cruised a problem at their limit and quietly
+            suspected a generous grade.
+          </p>
+          <p>
+            So I wanted to estimate difficulty without looking at the grade at all. Instead, I used only tick lists:
+            who climbed what, and whether they flashed it. If grades contain a real signal, that signal should be
+            recoverable from the pattern of ascents alone.
           </p>
         </section>
 
-        <!-- 2. The Data -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The data</h2>
+          <h2 class="font-serif text-2xl">A mathematical model of bouldering</h2>
           <p>
-            The model is trained on <strong>~1.5 million ascent logs</strong> scraped from public climbing
-            databases, covering <strong>~50,500 boulders</strong> across thousands of crags, attempted by
-            <strong>~31,000 climbers</strong>. Each log records who climbed what, and whether they
-            <em>flashed</em> (sent first try), <em>sent</em> (after multiple attempts), or just <em>tried</em> (logged
-            an attempt without success).
+            Let $\mathcal{B}=\{b_1,\ldots,b_n\}$ be the set of boulders and
+            $\mathcal{C}=\{c_1,\ldots,c_m\}$ the set of climbers. At first sight, each record is just a pair
+            $(c_i,b_j)$ saying that climber $c_i$ climbed boulder $b_j$. We assign one hidden number to each side:
           </p>
-          <p>
-            For every observed (climber, boulder) pair, we also sample <em>negative</em> observations: boulders in
-            crags the climber visited but didn&rsquo;t log. These negatives are ambiguous — they could mean
-            &ldquo;didn&rsquo;t try&rdquo; or &ldquo;tried and failed but didn&rsquo;t log it&rdquo; — and the
-            model explicitly handles this ambiguity. During training, negatives are subsampled at a
-            10:1 negative-to-positive ratio.
-          </p>
-        </section>
-
-        <!-- 3. The Model -->
-        <section class="space-y-3">
-          <h2 class="font-serif text-2xl">A Bayesian model of bouldering</h2>
-          <p>
-            I frame every ascent as a <strong>sequential decision cascade</strong>:
-          </p>
-          <div class="text-center my-4 font-mono text-base leading-relaxed">
-            Try? &rarr; Send? &rarr; Flash?
-          </div>
-          <p>
-            A climber first decides whether to attempt a problem. If they try, they may succeed. If they
-            succeed, they may have done so on the first go. Each step is a logistic function of latent traits:
-          </p>
-
           <ul class="list-disc pl-6 space-y-2">
-            <li>
-              <strong>Climber ability</strong> ($\theta_i$) — how strong the climber is.
-            </li>
-            <li>
-              <strong>Climber prolificity</strong> ($\alpha_i$) — how likely a climber is to try
-              <em>anything</em>, regardless of difficulty.
-            </li>
-            <li>
-              <strong>Boulder difficulty</strong> ($d_j$) — the latent, inferred hardness of the problem.
-            </li>
-            <li>
-              <strong>Boulder popularity</strong> ($\pi_j$) — how appealing a boulder is, all else equal.
-            </li>
+            <li><strong>climber ability</strong> ($\theta_i$)&mdash;how strong climber $i$ is;</li>
+            <li><strong>boulder difficulty</strong> ($d_j$)&mdash;how hard boulder $j$ is.</li>
           </ul>
-
-          <p>The try probability is the heart of the model:</p>
-
-          $$ \text{logit}(P_{\text{try}}) = \alpha_i + \pi_j - \gamma_i \cdot (\theta_i - d_j - \mu_i)^2 $$
-
+          <p>A natural first model is</p>
+          $$P(c_i\text{ sends }b_j\mid c_i\text{ tries }b_j)=\sigma(\theta_i-d_j),$$
           <p>
-            The quadratic penalty $(\theta_i - d_j - \mu_i)^2$ captures the <strong>Goldilocks effect</strong>:
-            climbers don&rsquo;t try problems uniformly — they gravitate toward boulders near their own level.
-            A strong climber skips the V0 warm-ups; a beginner doesn&rsquo;t project V10. The per-climber
-            parameters $\gamma_i$ (selectivity) and $\mu_i$ (preferred difficulty offset) let each climber&rsquo;s
-            window vary: some are specialists who only try things at their limit, others are generalists.
+            where $\sigma(x)=1/(1+e^{-x})$ is the logistic function. This is the same basic idea as a
+            <a class="underline hover:no-underline" href="https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model">Bradley&ndash;Terry model</a>,
+            and closely related to Elo ratings. Imagine a tournament with climbers on one team and boulders on the
+            other. A send is a win for the climber. If ability and difficulty are equal, the model gives the climber
+            a 50% chance; move them apart and the odds change smoothly.
           </p>
-
-          <p>The send and flash probabilities are simpler — pure ability vs. difficulty:</p>
-
-          $$ \text{logit}(P_{\text{send}} \mid \text{try}) = \theta_i - d_j $$
-          $$ \text{logit}(P_{\text{flash}} \mid \text{send}) = \theta_i - d_j - \beta $$
-
           <p>
-            A global intercept $\beta$ controls how much harder flashing is than sending. All latent
-            variables have hierarchical priors: climber abilities are drawn from a population distribution,
-            and boulder difficulties are nested within <strong>sectors</strong> (3,927 of them), so problems
-            in the same area share a difficulty baseline. This regularizes estimates for boulders with
-            few ascents.
+            For example, if I have roughly even odds on a 6C while Will Bosi has even odds on an 8C, then
+            $\theta_{\text{Marco}}\approx d_{\text{6C}}$ and
+            $\theta_{\text{Bosi}}\approx d_{\text{8C}}$. The model correctly predicts that my chance on the 8C is
+            tiny and his chance on the 6C is close to one.
+          </p>
+          <p>
+            But Will Bosi&rsquo;s tick list does not contain every 6C in the world. The equation predicts success
+            <em>given an attempt</em>; the data rarely tell us whether an attempt happened. In our imaginary
+            tournament, we record every match won by a climber, but a missing result could mean either that the
+            boulder won or that the match was never played. Fit the simple model to that data and it produces nonsense.
           </p>
         </section>
 
-        <!-- 4. Training -->
+        <section class="space-y-3">
+          <h3 class="font-serif text-xl">Prolificity and popularity</h3>
+          <p>To separate strength from opportunity, we introduce two more hidden quantities:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong>climber prolificity</strong> ($\alpha_i$)&mdash;how likely a climber is to try things at all;</li>
+            <li><strong>boulder popularity</strong> ($\pi_j$)&mdash;how likely a problem is to attract an attempt.</li>
+          </ul>
+          <p>The first useful version of the model is therefore</p>
+          $$P(\text{try}_{ij})=\sigma(\alpha_i+\pi_j),$$
+          $$P(\text{send}_{ij}\mid\text{try}_{ij})=\sigma(\theta_i-d_j).$$
+          <p>
+            Their product gives the chance that a particular ascent appears. This already recovers some information:
+            a popular boulder is no longer automatically mistaken for an easy one, and a prolific climber is no longer
+            automatically mistaken for a strong one. But it leaves out an important fact about how climbers choose projects.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h3 class="font-serif text-xl">The Goldilocks effect</h3>
+          <p>
+            Climbers do not sample rock uniformly. Beginners generally do not pull onto 8Cs, but elite climbers also
+            do not spend their day collecting every 4 in the forest. We tend to choose problems in a window around our
+            level: not impossibly hard, not boringly easy, but just right.
+          </p>
+          <p>I model this selection process with a quadratic penalty:</p>
+          $$\operatorname{logit}P(\text{try}_{ij})=
+            \alpha_i+\pi_j-\gamma_i(\theta_i-d_j-\mu_i)^2.$$
+          <p>
+            The try probability peaks at a preferred difficulty. The parameter $\gamma_i&gt;0$ controls how narrow the
+            window is: a high value describes a selective projector, while a low value describes someone happy to try
+            a broad range. The offset $\mu_i$ moves the centre of that window for each climber. Both are learned from
+            the data, rather than fixed by hand.
+          </p>
+          <h3 class="font-serif text-xl pt-2">Flashes</h3>
+          <p>
+            Flashes provide a second, particularly informative test of the ability&ndash;difficulty gap:
+          </p>
+          $$P(\text{flash}_{ij}\mid\text{send}_{ij})=
+            \sigma(\theta_i-d_j-\beta),$$
+          <p>
+            where the global $\beta$ is the extra margin normally needed to send first go. The complete model is a
+            cascade: choose whether to try, then whether to send, then whether that send was a flash.
+          </p>
+          <p>
+            A small number of users explicitly log failed attempts, and the model can use them. They are negligible
+            compared with the ascent data, however, so they do not solve the missing-match problem. For an unlogged
+            climber&ndash;boulder pair, the likelihood therefore keeps both explanations alive: perhaps it was never tried;
+            perhaps it was tried and not sent. We sum over those possibilities instead of pretending to know which one occurred.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="font-serif text-2xl">Going Bayesian</h2>
+          <p>
+            A point estimate would let me rank boulders, but it would hide the most important qualifier: how sure are
+            we? One obscure problem with two very strong ascensionists might look impossibly hard by accident. A classic
+            with hundreds of ascents gives much stronger evidence.
+          </p>
+          <p>
+            I therefore made the model Bayesian. Abilities, prolificities, popularities, try-curve parameters, and
+            difficulties are distributions rather than isolated fitted numbers. The posterior gives a mean and a
+            credible interval for every climber and boulder. More data usually mean a narrower interval.
+          </p>
+          <p>
+            This also changes how rankings should be read. Below I rank by the lower end of the 95% credible interval,
+            not simply by the mean. To place highly, a climber or boulder must be not only impressive but convincingly so.
+          </p>
+        </section>
+
         <section class="space-y-3">
           <h2 class="font-serif text-2xl">Training at scale</h2>
           <p>
-            With ~82,000 latent parameters and millions of observations, MCMC would be impractical. The
-            model is fit via <strong>Automatic Differentiation Variational Inference (ADVI)</strong> with a
-            full-rank Gaussian approximation, using minibatch stochastic optimization. Training ran for
-            500,000 iterations with the Adam optimizer (lr = 0.003, batch size = 4,096). After
-            convergence, 3,000 posterior draws were sampled to produce credible intervals for every estimate.
+            The raw public data contain about <strong>1.36 million ascent records</strong> and metadata for roughly
+            185,000 boulders. After restricting the analysis to boulders with usable ascent data, the fitted dataset
+            contains <strong>31,616 climbers</strong> and <strong>50,514 boulders</strong>. A record distinguishes a
+            flash from a later send and, in the comparatively rare cases where it is logged, an unsuccessful go.
           </p>
           <p>
-            The key validation: how well does the inferred difficulty $d_j$ predict the community grade?
-            A weighted regression of community grade onto $d_j$ yields <strong>R² = 0.75</strong>.
-            Including popularity $\pi_j$ lifts this to <strong>R² = 0.79</strong>, suggesting that popular
-            boulders tend to receive slightly inflated grades.
+            Positive records alone are not enough: the model also needs to see things that did not appear on a tick
+            list. For each climber, I take boulders in crags they visited but did not log as ambiguous negatives.
+            This is a much more plausible comparison set than every boulder on Earth. During training I subsample ten
+            of these negatives for every positive observation, both to keep computation manageable and to stop the
+            enormous number of missing pairs from overwhelming the signal.
+          </p>
+          <p>
+            The community grade is <em>not</em> an input to the likelihood. It is only used afterwards as an external
+            check on what the model learned.
+          </p>
+          <p>
+            The model has around <strong>82,000 latent parameters</strong> and millions of potential observations, so
+            conventional Markov chain Monte Carlo would be painfully slow. I used
+            <strong>Automatic Differentiation Variational Inference</strong> (ADVI) instead, approximating the posterior
+            with a full-rank multivariate Gaussian and optimizing it on minibatches of 4,096 observations.
+          </p>
+          <p>
+            Training used Adam with a learning rate of 0.003 and was scheduled for two million iterations. I saved
+            checkpoints throughout and selected the 340,000-iteration checkpoint that performed best on the held-out
+            grade validation, then drew 3,000 samples from its approximate posterior to calculate intervals.
+            Variational inference is an approximation&mdash;especially in the tails&mdash;but it makes a model of this size practical.
+          </p>
+          <p>
+            For validation, I regress the withheld community grade on inferred difficulty, weighting well-travelled
+            boulders more heavily. Difficulty explains <strong>75% of the variance</strong> in grades
+            ($R^2=0.75$).
           </p>
         </section>
 
-        <!-- 5. Results: Difficulty vs Grade -->
-        <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The model agrees with the community — mostly</h2>
-          <p>
-            The scatter of inferred difficulty against the real V-grade shows a tight linear relationship:
-          </p>
+        <section class="space-y-8">
+          <h2 class="font-serif text-2xl">Results</h2>
 
+          <section class="space-y-3">
           <figure>
-            <img src="/assets/predicted-vs-real-C2xBVPwJ.webp" alt="Predicted difficulty (Elo) on the y-axis vs real V-grade on the x-axis. Dots are sized by number of logged ascents. A line connects weighted medians for each V-grade, weighted by ascent count. R²=0.75.">
-            <figcaption>Forecasted difficulty $d_j$ (Elo) vs. real V-grade. Each dot is a boulder, sized by its number of logged ascents. The line connects the weighted median predicted difficulty for each grade, weighted by number of ascents. The model recovers a strong linear signal from ascent patterns alone.</figcaption>
+            <img src="/assets/predicted-vs-real-C2xBVPwJ.webp" alt="Inferred difficulty on the y-axis against community V-grade on the x-axis. Points are sized by number of logged ascents, and a line connects weighted grade medians.">
+            <figcaption>Inferred difficulty $d_j$ against community V-grade. Each point is a boulder, sized by logged ascents; the line connects the ascent-weighted median at each grade. $R^2=0.75$.</figcaption>
           </figure>
-
           <p>
-            But the deviations are the interesting part. Dots that sit above the median line for
-            their grade are <strong>sandbags</strong> — harder than the consensus suggests. Those
-            below are <strong>soft touches</strong>.
+            The diagonal is the first result that matters. A latent number extracted only from who sent what lines up
+            closely with the labels climbers have negotiated over decades. Grades are noisy and personal, but they are
+            not arbitrary.
+          </p>
+          <p>
+            The departures from the line are also informative. A point far above its grade&rsquo;s median behaves like a
+            <strong>sandbag</strong>: its ascent pattern resembles harder boulders. A point below looks like a
+            <strong>soft touch</strong>. The distance is not a final verdict on a climb&mdash;style, morphology, and biased
+            visitors still matter&mdash;but it is a useful way to find disagreements worth investigating.
           </p>
         </section>
 
-        <!-- 6. Popularity vs Difficulty -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Popular boulders, inflated grades</h2>
-
+          <h3 class="font-serif text-xl">Difficulty is not popularity</h3>
           <figure>
-            <img src="/assets/popularity-vs-difficulty-iKf0YkdU.webp" alt="Forecasted popularity on the y-axis vs forecasted difficulty on the x-axis. Dots are colored by consensus grade and sized by number of ascents.">
-            <figcaption>Forecasted popularity $\pi_j$ vs. forecasted difficulty $d_j$. Each dot is a boulder: color is the consensus grade, size is the number of logged ascents.</figcaption>
+            <img src="/assets/popularity-vs-difficulty-iKf0YkdU.webp" alt="Inferred popularity on the y-axis against inferred difficulty on the x-axis. Points are colored by consensus grade and sized by ascents.">
+            <figcaption>Inferred popularity $\pi_j$ against inferred difficulty $d_j$. Colour shows community grade and point size shows logged ascents.</figcaption>
           </figure>
-
           <p>
-            Boulder popularity $\pi_j$ and difficulty $d_j$ are only weakly correlated, confirming
-            the model successfully disentangles them. But the fact that adding $\pi$ to the grade
-            regression improves R² from 0.75 to 0.79 suggests a real effect: problems that attract
-            more traffic tend to carry slightly inflated grades. The large, light-colored dots
-            toward the upper-right — popular, hard problems — show where consensus may drift
-            upward as more climbers log sends.
+            Popularity and difficulty are only weakly related, which is exactly why both are needed. A roadside classic
+            can be easy and enormously popular; a difficult eliminate in an obscure sector can receive almost no traffic.
+            A model with only one boulder parameter would confuse the two.
+          </p>
+          <p>
+            Here popularity is mainly a nuisance variable: accounting for it prevents the model from treating a large
+            number of ascents as direct evidence that a boulder is easy. It may capture accessibility, reputation,
+            quality, or simply how often climbers visit the surrounding area; the model does not distinguish between them.
           </p>
         </section>
 
-        <!-- 7. Strongest climbers -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The strongest climbers — found by the model</h2>
+          <h3 class="font-serif text-xl">Inferred climber ability</h3>
           <p>
-            The model has never seen a competition result, a podium, or a name. It only knows ascent
-            logs. Yet when we rank climbers by posterior ability $\theta_i$, the top of the list
-            reads like a who&rsquo;s-who of professional bouldering. The ranking uses the
-            <em>lower bound</em> of the 95% credible interval, not the posterior mean — a climber
-            with few logged ascents needs an exceptional record to rank high, because the model
-            is less certain about them.
+            The model has not seen competition results, sponsorships, or biographies; it only knows ascent logs.
+            Nevertheless, the top of the ability ranking includes many established elite climbers. The ordering below uses the lower
+            bound of each 95% credible interval; &ldquo;ability&rdquo; is in the model&rsquo;s latent units and should only be read comparatively.
           </p>
-
-          <table class="basic">
-            <thead>
-              <tr><th>Rank</th><th>Climber</th><th>Ability</th><th>95% low</th><th>Ascents logged</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Jules Marchaland</td><td>4.29</td><td>4.11</td><td>53</td></tr>
-              <tr><td>2</td><td>Vadim Timonov</td><td>4.04</td><td>3.89</td><td>166</td></tr>
-              <tr><td>3</td><td>Noah Wheeler</td><td>4.05</td><td>3.85</td><td>93</td></tr>
-              <tr><td>4</td><td>Andrew Nimmer</td><td>3.86</td><td>3.73</td><td>336</td></tr>
-              <tr><td>5</td><td>Matt Fultz</td><td>3.72</td><td>3.64</td><td>371</td></tr>
-              <tr><td>6</td><td>Mejdi Schalck</td><td>3.73</td><td>3.55</td><td>53</td></tr>
-              <tr><td>7</td><td>Adam Ondra</td><td>3.70</td><td>3.55</td><td>156</td></tr>
-              <tr><td>8</td><td>William Bosi</td><td>3.72</td><td>3.55</td><td>41</td></tr>
-              <tr><td>9</td><td>Kali Tolsma</td><td>3.81</td><td>3.47</td><td>23</td></tr>
-              <tr><td>10</td><td>Fabrice Landry</td><td>3.72</td><td>3.44</td><td>334</td></tr>
-              <tr><td>11</td><td>Pietro Vidi</td><td>3.52</td><td>3.41</td><td>180</td></tr>
-              <tr><td>12</td><td>Yannick Flohé</td><td>3.64</td><td>3.40</td><td>54</td></tr>
-              <tr><td>13</td><td>Nimrod Marcus</td><td>3.63</td><td>3.37</td><td>50</td></tr>
-              <tr><td>14</td><td>James Webb</td><td>3.41</td><td>3.36</td><td>916</td></tr>
-              <tr><td>15</td><td>David Firnenburg</td><td>3.38</td><td>3.32</td><td>393</td></tr>
-              <tr><td>16</td><td>Thilo Jeldriksønn</td><td>3.45</td><td>3.32</td><td>159</td></tr>
-              <tr><td>17</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
-              <tr><td>18</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
-              <tr><td>19</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
-              <tr><td>20</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
-            </tbody>
-          </table>
-
+          <div class="table-wrap">
+            <table class="basic">
+              <thead><tr><th>Rank</th><th>Climber</th><th>Ability</th><th>95% low</th><th>Logged ascents</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Jules Marchaland</td><td>4.29</td><td>4.11</td><td>53</td></tr>
+                <tr><td>2</td><td>Vadim Timonov</td><td>4.04</td><td>3.89</td><td>166</td></tr>
+                <tr><td>3</td><td>Noah Wheeler</td><td>4.05</td><td>3.85</td><td>93</td></tr>
+                <tr><td>4</td><td>Andrew Nimmer</td><td>3.86</td><td>3.73</td><td>336</td></tr>
+                <tr><td>5</td><td>Matt Fultz</td><td>3.72</td><td>3.64</td><td>371</td></tr>
+                <tr><td>6</td><td>Mejdi Schalck</td><td>3.73</td><td>3.55</td><td>53</td></tr>
+                <tr><td>7</td><td>Adam Ondra</td><td>3.70</td><td>3.55</td><td>156</td></tr>
+                <tr><td>8</td><td>William Bosi</td><td>3.72</td><td>3.55</td><td>41</td></tr>
+                <tr><td>9</td><td>Kali Tolsma</td><td>3.81</td><td>3.47</td><td>23</td></tr>
+                <tr><td>10</td><td>Fabrice Landry</td><td>3.72</td><td>3.44</td><td>334</td></tr>
+                <tr><td>11</td><td>Pietro Vidi</td><td>3.52</td><td>3.41</td><td>180</td></tr>
+                <tr><td>12</td><td>Yannick Floh&eacute;</td><td>3.64</td><td>3.40</td><td>54</td></tr>
+                <tr><td>13</td><td>Nimrod Marcus</td><td>3.63</td><td>3.37</td><td>50</td></tr>
+                <tr><td>14</td><td>James Webb</td><td>3.41</td><td>3.36</td><td>916</td></tr>
+                <tr><td>15</td><td>David Firnenburg</td><td>3.38</td><td>3.32</td><td>393</td></tr>
+                <tr><td>16</td><td>Thilo Jeldriks&oslash;nn</td><td>3.45</td><td>3.32</td><td>159</td></tr>
+                <tr><td>17</td><td>Peter Satt</td><td>3.38</td><td>3.30</td><td>175</td></tr>
+                <tr><td>18</td><td>Solomon Kemball</td><td>3.58</td><td>3.30</td><td>45</td></tr>
+                <tr><td>19</td><td>Keita Mogaki</td><td>3.44</td><td>3.30</td><td>91</td></tr>
+                <tr><td>20</td><td>Piotr Schab</td><td>3.44</td><td>3.30</td><td>154</td></tr>
+              </tbody>
+            </table>
+          </div>
           <p>
-            This is remarkably good signal. Jules Marchaland — World Cup finalist — tops the list with
-            only 53 logged ascents, and Ondra, Bosi, Schalck, Fultz, Flohé follow: the model recovers
-            the pro circuit from nothing but tick lists. Notice Kali Tolsma — a top-three posterior
-            mean, but with only 23 logged ascents the interval is wide and the ranking demotes them.
+            The uncertainty-aware ranking matters. Kali Tolsma has a higher posterior mean than several climbers above
+            them, but only 23 logged ascents make the interval wide. James Webb&rsquo;s mean is lower, while 916 ascents make
+            the estimate much more precise. A substantial record can therefore rank above a stronger but less certain estimate.
+          </p>
+          <p>
+            More broadly, recovering names such as Ondra, Bosi, Schalck, Fultz, Floh&eacute;, and Webb is a useful
+            sanity check. The model was not told who the professionals are; it inferred their ability from their ascent records.
           </p>
         </section>
 
-        <!-- 8. Hardest boulders -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">The hardest boulders</h2>
+          <h3 class="font-serif text-xl">Inferred boulder difficulty</h3>
           <p>
-            The same trick works for boulders. Ranking by the lower bound of the difficulty
-            credible interval, these are the problems the model is most confident are hard —
-            shown with their community grade and the model&rsquo;s predicted V-grade:
+            The same ranking can be made for boulders. Again, these are ordered by the lower end of the
+            difficulty interval, not the point estimate. &ldquo;Predicted&rdquo; maps latent difficulty back onto the V-scale
+            learned in the validation regression.
           </p>
-
-          <table class="basic">
-            <thead>
-              <tr><th>Rank</th><th>Boulder</th><th>Area</th><th>Grade</th><th>Predicted</th><th>Ascents</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Power of Now</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V15.8</td><td>26</td></tr>
-              <tr><td>2</td><td>Foxy Lady (dyno)</td><td>Magic Wood</td><td>8A (V11)</td><td>V15.2</td><td>33</td></tr>
-              <tr><td>3</td><td>Never ending story 1</td><td>Magic Wood</td><td>8A+ (V12)</td><td>V15.0</td><td>32</td></tr>
-              <tr><td>4</td><td>Ephyra</td><td>Chironico</td><td>8C+ (V16)</td><td>V15.6</td><td>7</td></tr>
-              <tr><td>5</td><td>Never ending story 2</td><td>Magic Wood</td><td>8A (V11)</td><td>V14.6</td><td>84</td></tr>
-              <tr><td>6</td><td>White Stripe</td><td>Brione</td><td>8A+ (V12)</td><td>V15.1</td><td>10</td></tr>
-              <tr><td>7</td><td>Mystic Stylez</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V14.6</td><td>29</td></tr>
-              <tr><td>8</td><td>Pagan Poetry Low</td><td>Left Fork</td><td>8B (V13)</td><td>V14.5</td><td>42</td></tr>
-              <tr><td>9</td><td>Direct North</td><td>Buttermilks</td><td>8B+ (V14)</td><td>V14.6</td><td>34</td></tr>
-              <tr><td>10</td><td>The Mandala Sit</td><td>Buttermilks</td><td>8B (V13)</td><td>V14.4</td><td>42</td></tr>
-            </tbody>
-          </table>
-
+          <div class="table-wrap">
+            <table class="basic">
+              <thead><tr><th>Rank</th><th>Boulder</th><th>Area</th><th>Grade</th><th>Predicted</th><th>Ascents</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Power of Now</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V15.8</td><td>26</td></tr>
+                <tr><td>2</td><td>Foxy Lady (dyno)</td><td>Magic Wood</td><td>8A (V11)</td><td>V15.2</td><td>33</td></tr>
+                <tr><td>3</td><td>Never Ending Story 1</td><td>Magic Wood</td><td>8A+ (V12)</td><td>V15.0</td><td>32</td></tr>
+                <tr><td>4</td><td>Ephyra</td><td>Chironico</td><td>8C+ (V16)</td><td>V15.6</td><td>7</td></tr>
+                <tr><td>5</td><td>Never Ending Story 2</td><td>Magic Wood</td><td>8A (V11)</td><td>V14.6</td><td>84</td></tr>
+                <tr><td>6</td><td>White Stripe</td><td>Brione</td><td>8A+ (V12)</td><td>V15.1</td><td>10</td></tr>
+                <tr><td>7</td><td>Mystic Stylez</td><td>Magic Wood</td><td>8B+ (V14)</td><td>V14.6</td><td>29</td></tr>
+                <tr><td>8</td><td>Pagan Poetry Low</td><td>Left Fork</td><td>8B (V13)</td><td>V14.5</td><td>42</td></tr>
+                <tr><td>9</td><td>Direct North</td><td>Buttermilks</td><td>8B+ (V14)</td><td>V14.6</td><td>34</td></tr>
+                <tr><td>10</td><td>The Mandala Sit</td><td>Buttermilks</td><td>8B (V13)</td><td>V14.4</td><td>42</td></tr>
+              </tbody>
+            </table>
+          </div>
           <p>
-            Note what the list is <em>not</em>: it&rsquo;s not simply the highest-graded problems in the
-            dataset. Foxy Lady, graded 8A, ranks second — the model predicts it climbs more like V15.
-            Only people who consistently send far harder problems ever manage it.
+            This is not merely a list of the largest community grades. <em>Foxy Lady (dyno)</em>, listed at 8A,
+            ranks second because the people who log it otherwise have unusually strong records. That is precisely the
+            kind of discrepancy the model is designed to expose.
+          </p>
+          <p>
+            The table should not be read as a definitive regrading. Several Magic Wood problems cluster near
+            the top, and large differences such as V11 to V15 may reflect style, selection, data quality,
+            or other modelling limitations rather than four missing grades. The ranking is better treated as a way to ask
+            what is unusual about a problem&rsquo;s ascent pattern.
           </p>
         </section>
 
-        <!-- 9. Browse -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Explore the results</h2>
+          <h3 class="font-serif text-xl">Explore the disagreements</h3>
           <p>
-            Every boulder in the dataset gets a predicted difficulty, a credible interval, and a
-            residual — how much harder or softer it is than the median boulder of its grade.
-            You can search by name, filter by area and grade, and sort by how much the model
-            disagrees with the consensus.
+            Every boulder in the fitted dataset receives an inferred difficulty, a credible interval, and a residual
+            from the median boulder at its grade. I built a table where you can search by name or area, filter by grade
+            and ascent count, and sort by the size or statistical significance of the disagreement.
           </p>
-          <p>
-            <a class="underline hover:no-underline" href="../vl-predictor/">Browse the full table &rarr;</a>
-          </p>
+          <p><a class="underline hover:no-underline" href="../vl-predictor/">Browse all inferred grades &rarr;</a></p>
+          </section>
         </section>
 
-        <!-- 10. Caveats -->
         <section class="space-y-3">
-          <h2 class="font-serif text-2xl">Caveats &amp; what&rsquo;s next</h2>
+          <h2 class="font-serif text-2xl">What the model cannot know</h2>
           <p>
-            This is a first pass. The model currently treats all ascents as independent, ignoring
-            the fact that climbers improve over time. It doesn&rsquo;t model boulder style (slab vs.
-            roof vs. crimp), which likely explains some of the residual variance. And the negative
-            sampling — treating unseen boulders as ambiguous — is a pragmatic simplification that
-            could be improved with explicit &ldquo;didn&rsquo;t try&rdquo; annotations.
+            The model compresses a great deal of climbing into one ability axis and one difficulty axis. It does not
+            know whether a boulder is a slab, a roof, or a paddle dyno. It does not know a climber&rsquo;s height or span,
+            whether conditions were terrible, whether holds broke, or whether a log refers to the correct variation.
+            It also treats ability as fixed, although real climbers improve, get injured, and age.
           </p>
           <p>
-            Still, the signal is strong: from anonymous tick lists, the model recovers a difficulty
-            scale that aligns with human judgment, spots sandbags and soft touches, and ranks the
-            world&rsquo;s best climbers. Not bad for something that has never touched rock.
+            The negative data are necessarily approximate. Visiting a crag does not mean seeing every boulder there,
+            and public tick lists are a self-selected sample of climbers and ascents. Finally, ADVI&rsquo;s credible intervals
+            are approximate and can be overconfident.
+          </p>
+          <p>
+            These are not minor footnotes; they explain why an inferred grade should start a conversation, not end one.
+          </p>
+          <p>
+            Despite these limitations, the central result is encouraging. Starting with incomplete tick lists, the model
+            reconstructs much of the community grade scale, distinguishes popularity from difficulty, identifies many
+            strong boulderers, and points to problems where the ascent data disagree with the published grade. This
+            suggests that ascent histories contain a useful independent measure of boulder difficulty.
           </p>
         </section>
 
