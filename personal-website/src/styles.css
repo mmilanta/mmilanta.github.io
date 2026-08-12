@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+/* MNIST interactive figure */
+.mnist-demo { background: #f8f9fa; border: 1px solid #dee2e6; margin: 2rem 0; padding: 1.5rem; }
+.mnist-demo h3 { margin: 0 0 .25rem; }
+.mnist-demo .demo-copy p { margin: 0 0 1.5rem; }
+.demo-layout { align-items: center; display: grid; gap: 2rem; grid-template-columns: minmax(240px, 330px) 1fr; }
+.canvas-column { max-width: 330px; width: 100%; }
+.pixel-grid { aspect-ratio: 1; background: #212529; border: 8px solid #212529; cursor: crosshair; display: grid; gap: 1px; grid-template-columns: repeat(28, 1fr); touch-action: none; user-select: none; }
+.pixel { background: rgba(255, 255, 255, var(--ink, 0)); border: 0; min-width: 0; padding: 0; pointer-events: none; }
+.clear-button { background: white; border: 1px solid #6c757d; color: #343a40; cursor: pointer; font: .875rem Georgia, serif; margin-top: .75rem; padding: .4rem .7rem; }
+.clear-button:hover { background: #e9ecef; }
+.prediction-panel { min-width: 0; }
+.prediction-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: .5rem; }
+.prediction-caption { color: #6c757d; font: .875rem Georgia, serif; }
+.prediction-heading h4 { color: #212529; font: 400 3rem/.9 Georgia, serif; margin: .25rem 0 0; }
+.prediction-score { color: #6c757d; font: .875rem Georgia, serif; }
+.chart-wrap { margin: 0 auto; max-width: 320px; }
+.model-note { color: #6c757d !important; font: .8rem/1.45 Georgia, serif !important; margin: 1rem 0 0 !important; }
+@media (max-width: 760px) { .demo-layout { grid-template-columns: 1fr; gap: 2rem; } .canvas-column { margin: auto; max-width: 360px; } }
