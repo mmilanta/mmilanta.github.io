@@ -13,9 +13,9 @@ let lastPixel: [number, number] | null = null;
 
 const grid = document.querySelector<HTMLDivElement>('#pixel-grid')!;
 const label = document.querySelector<HTMLElement>('#prediction-label')!;
-const score = document.querySelector<HTMLElement>('#prediction-score')!;
 const clearButton = document.querySelector<HTMLButtonElement>('#clear-drawing')!;
 const canvas = document.querySelector<HTMLCanvasElement>('#prediction-chart')!;
+let largestProbabilityIndex: number | null = null;
 
 for (let i = 0; i < pixels.length; i += 1) {
   const cell = document.createElement('button');
@@ -28,37 +28,51 @@ for (let i = 0; i < pixels.length; i += 1) {
 }
 
 const chart = new Chart(canvas, {
-  type: 'doughnut',
+  type: 'bar',
   data: {
-    labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Does not know'],
+    labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
     datasets: [{
-      data: Array(11).fill(1),
-      backgroundColor: ['#e07a5f', '#3d405b', '#81b29a', '#f2cc8f', '#5f7da8', '#c06c84', '#6d597a', '#4f8a8b', '#d08c60', '#8c9a64', '#adb5bd'],
-      borderColor: '#fffdf8',
-      borderWidth: 3,
-      hoverOffset: 4,
+      label: 'Probability',
+      data: Array(10).fill(0),
+      backgroundColor: ['#e07a5f', '#3d405b', '#81b29a', '#f2cc8f', '#5f7da8', '#c06c84', '#6d597a', '#4f8a8b', '#d08c60', '#8c9a64'],
+      borderRadius: 2,
     }],
   },
   options: {
     responsive: true,
     maintainAspectRatio: true,
+    aspectRatio: 1.5,
     animation: false,
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: {
+          color: '#3d405b',
+          font: (context) => ({ family: 'Georgia', weight: context.index === largestProbabilityIndex ? 'bold' : 'normal' }),
+        },
+      },
+      y: {
+        beginAtZero: true,
+        max: 1,
+        ticks: {
+          color: '#6c757d',
+          callback: (value) => `${Math.round(Number(value) * 100)}%`,
+          font: { family: 'Georgia' },
+        },
+      },
+    },
     plugins: {
-      legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, color: '#3d405b', font: { family: 'Georgia' } } },
-      tooltip: { callbacks: { label: (item) => ` ${item.label}: ${Number(item.raw).toFixed(3)}` } },
+      legend: { display: false },
+      tooltip: { callbacks: { label: (item) => ` ${Number(item.raw).toLocaleString(undefined, { style: 'percent', maximumFractionDigits: 1 })}` } },
     },
   },
 });
 
-// The network has independent sigmoid outputs, rather than a softmax output.
-// Treat each output as evidence (odds) for a digit and keep one extra unit of
-// evidence for "does not know". This gives the pie genuinely categorical,
-// normalized values without making the digit probabilities look more certain
-// just because the other outputs happened to be large.
+// Normalize the network's output scores into categorical probabilities.
 function categoricalProbabilities(logits: number[]): number[] {
   const odds = logits.map((logit) => Math.exp(Math.max(-50, Math.min(50, logit))));
-  const total = odds.reduce((sum, value) => sum + value, 1); // 1 = unknown
-  return [...odds.map((value) => value / total), 1 / total];
+  const total = odds.reduce((sum, value) => sum + value, 0);
+  return odds.map((value) => value / total);
 }
 
 function predict() {
@@ -81,11 +95,11 @@ function predict() {
     return sum;
   });
   const probabilities = categoricalProbabilities(logits);
+  largestProbabilityIndex = probabilities.indexOf(Math.max(...probabilities));
   chart.data.datasets[0].data = probabilities;
   chart.update();
   const winner = probabilities.slice(0, outputSize).indexOf(Math.max(...probabilities.slice(0, outputSize)));
   label.textContent = String(winner);
-  score.textContent = `${(probabilities[winner] * 100).toFixed(1)}% confidence`;
 }
 
 // A soft, three-pixel brush: the centre is solid and the surrounding
@@ -126,6 +140,6 @@ grid.addEventListener('pointerdown', (event) => { drawing = true; grid.setPointe
 grid.addEventListener('pointermove', (event) => { if (!drawing) return; const next = pointerPixel(event); paintLine(lastPixel, next); lastPixel = next; predict(); });
 grid.addEventListener('pointerup', () => { drawing = false; lastPixel = null; });
 grid.addEventListener('pointercancel', () => { drawing = false; lastPixel = null; });
-clearButton.addEventListener('click', () => { pixels.fill(0); cells.forEach((cell) => cell.style.setProperty('--ink', '0')); label.textContent = '—'; score.textContent = 'Draw a digit'; chart.data.datasets[0].data = Array(11).fill(1); chart.update(); });
+clearButton.addEventListener('click', () => { pixels.fill(0); cells.forEach((cell) => cell.style.setProperty('--ink', '0')); label.textContent = '—'; largestProbabilityIndex = null; chart.data.datasets[0].data = Array(10).fill(0); chart.update(); });
 
-fetch('/mnist/model.json').then((response) => response.json()).then((loaded: Model) => { model = loaded; predict(); }).catch(() => { score.textContent = 'Model unavailable'; });
+fetch('/mnist/model.json').then((response) => response.json()).then((loaded: Model) => { model = loaded; predict(); }).catch(() => { label.textContent = 'Model unavailable'; });

@@ -14,7 +14,6 @@
 .prediction-heading { align-items: end; display: flex; justify-content: space-between; margin-bottom: .5rem; }
 .prediction-caption { color: #6c757d; font: .875rem Georgia, serif; }
 .prediction-heading h4 { color: #212529; font: 400 3rem/.9 Georgia, serif; margin: .25rem 0 0; }
-.prediction-score { color: #6c757d; font: .875rem Georgia, serif; }
-.chart-wrap { margin: 0 auto; max-width: 320px; }
+.chart-wrap { margin: 0 auto; max-width: 520px; }
 .model-note { color: #6c757d !important; font: .8rem/1.45 Georgia, serif !important; margin: 1rem 0 0 !important; }
 @media (max-width: 760px) { .demo-layout { grid-template-columns: 1fr; gap: 2rem; } .canvas-column { margin: auto; max-width: 360px; } }

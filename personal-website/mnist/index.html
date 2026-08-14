@@ -15,8 +15,9 @@
           <nav class="hidden lg:block mt-6 text-gray-600" aria-label="Table of contents">
             <ul class="space-y-3 border-l border-gray-200 pl-4">
               <li><a class="hover:text-black" href="#introduction">Introduction</a></li>
-              <li><a class="hover:text-black" href="#experiment">The experiment</a></li>
+              <li><a class="hover:text-black" href="#experiment">Try the model</a></li>
               <li><a class="hover:text-black" href="#how-it-works">How it works</a></li>
+              <li><a class="hover:text-black" href="#training">Training</a></li>
             </ul>
           </nav>
         </div>
@@ -31,13 +32,13 @@
         <article class="font-serif text-lg leading-relaxed space-y-6">
           <section id="introduction" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">Introduction</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer at justo sed sapien dignissim posuere. Curabitur vitae neque vel augue consequat tincidunt, while the smallest details of a model become visible when we draw them by hand.</p>
-            <p>Praesent commodo, arcu at porttitor volutpat, mauris erat finibus justo, non pellentesque nunc justo sed nisl. In this experiment, every pixel is an input and every prediction is the result of a few simple matrix multiplications. There is no magic hidden behind the interface: only weights, activations, and a little bit of patience.</p>
+            <p>This is a small project about building and training a neural network for MNIST from scratch. The goal was not to beat an established machine-learning library, but to understand what happens beneath one by implementing the essential pieces myself.</p>
+            <p>MNIST is a collection of small images of handwritten digits. It is a simple enough problem to explore without hiding the details: every pixel becomes an input, and every prediction comes from matrix multiplications and activation functions implemented directly in this project.</p>
           </section>
 
           <section id="experiment" class="space-y-3">
-            <h2 class="font-serif text-2xl scroll-mt-10">The experiment</h2>
-            <p>Try drawing a digit in the grid below. The model was trained on handwritten numerals, but it has never seen your particular handwriting. Watch its uncertainty change as the ink accumulates.</p>
+            <h2 class="font-serif text-2xl scroll-mt-10">Try the model</h2>
+            <p>Draw a digit in the grid below to run the trained network in your browser. The bars show the probability assigned to each digit, and the most likely digit is highlighted beneath the chart.</p>
 
             <div class="mnist-demo not-prose">
               <div class="demo-copy">
@@ -52,10 +53,9 @@
                 <div class="prediction-panel">
                   <div class="prediction-heading">
                     <div><span class="prediction-caption">Prediction</span><h4 id="prediction-label">—</h4></div>
-                    <span id="prediction-score" class="prediction-score">Draw a digit</span>
                   </div>
                   <div class="chart-wrap"><canvas id="prediction-chart" aria-label="Real time prediction probabilities"></canvas></div>
-                  <p class="model-note">A 784 → 128 → 10 multilayer perceptron. The pie also includes “Does not know” when the output evidence is weak.</p>
+                  <p class="model-note">A 784 → 256 → 10 multilayer perceptron.</p>
                 </div>
               </div>
             </div>
@@ -63,8 +63,18 @@
 
           <section id="how-it-works" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">How it works</h2>
-            <p>The image is flattened into 784 numbers and passed through a hidden layer of 128 neurons. A ReLU activation keeps positive signals, after which a final layer produces one score for each digit from 0 to 9.</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed dictum, nisl in vulputate elementum, libero arcu feugiat erat, sed consequat ex erat non purus. Donec euismod sem sed libero finibus, and the boundary between an image and a number remains wonderfully ambiguous.</p>
+            <p>Each 28 × 28 grayscale image is flattened into 784 numbers and passed through a hidden layer of 256 neurons. A ReLU activation keeps the positive signals, after which a final layer produces one score for each digit from 0 to 9.</p>
+            <p>The network is deliberately small. It is large enough to learn the shapes in MNIST while keeping the forward pass, gradients, weight updates, and training loop understandable. The interactive demo above uses the resulting weights directly in the browser.</p>
+          </section>
+
+          <section id="training" class="space-y-3">
+            <h2 class="font-serif text-2xl scroll-mt-10">Training</h2>
+            <p>The plot below follows the training loss and success rate as the network learns. The loss falls while the share of correctly classified digits rises, making the progress of the model visible over the course of training.</p>
+            <figure class="my-6">
+              <img class="w-full h-auto border border-gray-200" src="/mnist/training.svg" alt="Plots of MNIST training loss and success rate over the course of training">
+              <figcaption class="mt-2 text-sm text-gray-500">Training loss and success rate for the from-scratch MNIST implementation.</figcaption>
+            </figure>
+            <p>Training this implementation takes 8 hours and 40 minutes per epoch. The same task in PyTorch takes only 2.93 seconds per epoch, making my system roughly 10,000 times slower. That gap is part of the point: this is a learning project rather than an optimized framework, and I developed it entirely from scratch with <strong>NO AI assistance</strong>.</p>
           </section>
         </article>
       </main>
