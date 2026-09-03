@@ -17,3 +17,17 @@
 .chart-wrap { margin: 0 auto; max-width: 520px; }
 .model-note { color: #6c757d !important; font: .8rem/1.45 Georgia, serif !important; margin: 1rem 0 0 !important; }
 @media (max-width: 760px) { .demo-layout { grid-template-columns: 1fr; gap: 2rem; } .canvas-column { margin: auto; max-width: 360px; } }
+
+/* Blog sidebar: only rendered on large screens, fixed to the left of the centered article */
+.blog-sidebar { display: none; }
+@media (min-width: 1440px) {
+  .blog-sidebar {
+    display: block;
+    position: fixed;
+    top: 2.5rem;
+    left: max(1.5rem, calc((100vw - 56rem) / 2 - 15rem));
+    width: 14rem;
+    max-height: calc(100vh - 5rem);
+    overflow-y: auto;
+  }
+}
