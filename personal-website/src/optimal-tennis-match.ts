@@ -1,3 +1,4 @@
+import './chart-font';
 import { Chart, registerables, type ScatterDataPoint } from 'chart.js';
 import { computeGraphOrError } from './compute';
 import { linspace, probability_parallel, fairness } from './loadAlgo';

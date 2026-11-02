@@ -1,3 +1,4 @@
+import './chart-font';
 import { Chart, registerables } from 'chart.js';
 import './styles.css';
 
@@ -48,7 +49,7 @@ const chart = new Chart(canvas, {
         grid: { display: false },
         ticks: {
           color: '#3d405b',
-          font: (context) => ({ family: 'Georgia', weight: context.index === largestProbabilityIndex ? 'bold' : 'normal' }),
+          font: (context) => ({ family: '"Libre Baskerville", Georgia, serif', weight: context.index === largestProbabilityIndex ? 'bold' : 'normal' }),
         },
       },
       y: {
@@ -57,7 +58,7 @@ const chart = new Chart(canvas, {
         ticks: {
           color: '#6c757d',
           callback: (value) => `${Math.round(Number(value) * 100)}%`,
-          font: { family: 'Georgia' },
+          font: { family: '"Libre Baskerville", Georgia, serif' },
         },
       },
     },

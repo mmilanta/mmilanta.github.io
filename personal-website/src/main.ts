@@ -1,3 +1,4 @@
+import './chart-font';
 // main.js
 import { computeGraphOrError } from './compute';
 import { linspace, probability_parallel, fairness, expectedLength } from './loadAlgo';
