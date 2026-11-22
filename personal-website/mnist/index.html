@@ -7,6 +7,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="/src/styles.css" rel="stylesheet">
   <title>MNIST from scratch</title>
+  <style>
+    mjx-container[display="true"] { overflow-x: auto; max-width: 100%; }
+  </style>
+  <!-- MathJax: render the LaTeX in this article -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
 </head>
 <body>
   <div class="min-h-screen flex justify-center overflow-x-hidden">
@@ -18,8 +31,11 @@
             <ul class="space-y-3 border-l border-gray-200 pl-4">
               <li><a class="hover:text-black" href="#introduction">Introduction</a></li>
               <li><a class="hover:text-black" href="#experiment">Try the model</a></li>
-              <li><a class="hover:text-black" href="#how-it-works">How it works</a></li>
-              <li><a class="hover:text-black" href="#training">Training</a></li>
+              <li><a class="hover:text-black" href="#how-it-works">Tensors and einsum notation</a></li>
+              <li><a class="hover:text-black" href="#automatic-differentiation">Automatic differentiation</a></li>
+              <li><a class="hover:text-black" href="#mnist-classifier">MNIST classifier</a></li>
+              <li><a class="hover:text-black" href="#training">Training plot</a></li>
+              <li><a class="hover:text-black" href="#comparison">Comparison with PyTorch and AI</a></li>
             </ul>
           </nav>
         </div>
@@ -34,8 +50,12 @@
         <article class="font-serif text-lg leading-relaxed space-y-6">
           <section id="introduction" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">Introduction</h2>
-            <p>This is a small project about building and training a neural network for MNIST from scratch. The goal was not to beat an established machine-learning library, but to understand what happens beneath one by implementing the essential pieces myself.</p>
-            <p>MNIST is a collection of small images of handwritten digits. It is a simple enough problem to explore without hiding the details: every pixel becomes an input, and every prediction comes from matrix multiplications and activation functions implemented directly in this project.</p>
+            <p>This project has been a personal effort of mine to fully understand the basics of deep learning. I did the project entirely without AI, as its objective was my own understanding, not the result itself. I used AI to proofread this post and to write the PyTorch implementation I used for comparison.</p>
+            <ol class="list-decimal space-y-1 pl-6">
+              <li>Build a tensor data structure, also known as an n-dimensional array. Implement the generic product using Einstein notation, like <code>einsum</code> in NumPy or PyTorch.</li>
+              <li>Build automatic differentiation on top of these tensors.</li>
+              <li>Use these two components to train a tiny MNIST classifier.</li>
+            </ol>
           </section>
 
           <section id="experiment" class="space-y-3">
@@ -64,20 +84,51 @@
           </section>
 
           <section id="how-it-works" class="space-y-3">
-            <h2 class="font-serif text-2xl scroll-mt-10">How it works</h2>
-            <p>Each 28 × 28 grayscale image is flattened into 784 numbers and passed through a hidden layer of 256 neurons. A ReLU activation keeps the positive signals, after which a final layer produces one score for each digit from 0 to 9.</p>
-            <p>The network is deliberately small. It is large enough to learn the shapes in MNIST while keeping the forward pass, gradients, weight updates, and training loop understandable. The interactive demo above uses the resulting weights directly in the browser.</p>
-            <p>The complete implementation is available on <a class="underline hover:no-underline" href="https://github.com/mmilanta/einstein">GitHub</a>.</p>
+            <h2 class="font-serif text-2xl scroll-mt-10">Tensors and einsum notation</h2>
+            <p>A tensor is a fancy name for an array with any number of dimensions. So a scalar number is just a tensor with 0 dimensions, a vector is a tensor with 1 dimension, and a matrix is a tensor with 2 dimensions. We can imagine “cubes” as tensors with 3 dimensions (stacks of matrices), and so on for any number of dimensions.</p>
+            <p>Multiplying two tensors can be done in many different ways. The generic product using Einstein notation is called <code>einsum</code>. Here’s what one such multiplication looks like. For a 3-dimensional tensor $A$ and a 4-dimensional tensor $B$, we have</p>
+            <p>$$
+\bigl[A_{ijk},\,B_{lmik}\bigr]_{km} = \sum_{ijl}A_{ijk}B_{lmik}.
+$$</p>
+            <p>In this notation, the subscript outside the brackets lists the indices we keep, in order. Here we keep $k$ and $m$, so the output is a 2-dimensional tensor. We just sum over all indices that do not appear in the output. Furthermore, if an index appears in both inputs, we are implicitly requiring that the two inputs have the same size along the corresponding dimensions.</p>
+            <p>This is a super general way to define multiplication. For instance, the classical matrix-vector product is just $\bigl[A_{ij},\,x_{j}\bigr]_{i}$ and the matrix-matrix product is $\bigl[A_{ij},\,B_{jk}\bigr]_{ik}$. The dot product is $\bigl[x_{i},\,y_{i}\bigr]$ and the outer product is $\bigl[x_{i},\,y_{j}\bigr]_{ij}$.</p>
           </section>
 
-          <section id="training" class="space-y-3">
-            <h2 class="font-serif text-2xl scroll-mt-10">Training</h2>
-            <p>The plot below follows the training loss and success rate as the network learns. The loss falls while the share of correctly classified digits rises, making the progress of the model visible over the course of training.</p>
-            <figure class="my-6">
+          <section id="automatic-differentiation" class="space-y-3">
+            <h2 class="font-serif text-2xl scroll-mt-10">Automatic differentiation</h2>
+            <p>This is the core algorithm in deep learning. The idea is that if I design my model $M$ as a differentiable function of the inputs $x$ and some parameters $\theta$, and use a differentiable loss, then</p>
+            <p>$$
+\text{Loss}(M(x, \theta), y)
+$$</p>
+            <p>is also differentiable. Thus I can compute the gradient of the loss with respect to the parameters of $M$. Then we can update the parameters using that gradient</p>
+            <p>$$
+\theta \leftarrow \theta - \eta \nabla_\theta \text{Loss}(M(x, \theta), y).
+$$</p>
+            <p>Automatic differentiation allows us to compute such gradients efficiently. The way it works here is that it keeps track of intermediate values during the computation of $M(x, \theta)$. And it keeps track of partial derivatives of each intermediate value with respect to its inputs. Then, when the loss is computed, the algorithm travels back through the graph and uses the chain rule to compute the gradient of the loss with respect to each intermediate value.</p>
+          </section>
+
+          <section id="mnist-classifier" class="space-y-3">
+            <h2 class="font-serif text-2xl scroll-mt-10">MNIST classifier</h2>
+            <p>Finally, I used all of this to build a handwritten digit classifier using the famous MNIST dataset. The model I trained is very simple</p>
+            <p>$$
+\begin{aligned}
+H_{bh} &amp;= \operatorname{ReLU}\!\left(\bigl[X_{bp},\,(W_1)_{ph}\bigr]_{bh}\right),\\
+M(X)_{bd} &amp;= \bigl[H_{bh},\,(W_2)_{hd}\bigr]_{bd}.
+\end{aligned}
+$$</p>
+            <p>Each row $b$ of $X$ is a flattened image. The first weight matrix maps its 784 pixels ($p$) to 256 hidden units ($h$), and the second maps those to 10 digit scores ($d$).</p>
+            <p>For training, I summed the losses for 16 samples and then took a gradient step. You can see the training plot and try the model yourself in the <a class="underline hover:no-underline" href="#experiment">interactive UI</a>.</p>
+            <figure id="training" class="my-6">
               <img class="w-full h-auto border border-gray-200" src="/mnist/training.svg" alt="Plots of MNIST training loss and success rate over the course of training">
               <figcaption class="mt-2 text-sm text-gray-500">Training loss and success rate for the from-scratch MNIST implementation.</figcaption>
             </figure>
-            <p>Training this implementation takes 8 hours and 40 minutes per epoch. The same task in PyTorch takes only 2.93 seconds per epoch, making my system roughly <strong>10,000 times slower</strong>. That gap is part of the point: this is a learning project rather than an optimized framework, and I developed it entirely from scratch with <strong>NO AI assistance</strong>.</p>
+            <p>The complete implementation is available on <a class="underline hover:no-underline" href="https://github.com/mmilanta/einstein">GitHub</a>.</p>
+          </section>
+
+          <section id="comparison" class="space-y-3">
+            <h2 class="font-serif text-2xl scroll-mt-10">Comparison with PyTorch and AI</h2>
+            <p>For the sake of humiliation, I asked GPT-6-sol to implement the same thing from scratch using PyTorch. It took no more than a few minutes to write, and training ran about 10,000 times faster. A single epoch took 2.93 seconds instead of 8 hours and 40 minutes.</p>
+            <p>The most surprising thing, maybe, is how much fun I had along the way. This crazy feeling of understanding each and every line of code and being in the flow for many hours straight. I hope that coding will become like horse riding. Useless, but people who really like it still do it.</p>
           </section>
         </article>
       </main>
