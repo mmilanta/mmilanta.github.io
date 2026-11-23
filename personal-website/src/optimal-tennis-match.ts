@@ -106,6 +106,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const ps = linspace(0, 1, 0.01);
 
+  // Loading bars over the plots while Pyodide loads and computes the graphs.
+  const TOTAL_STEPS = 12; // T_1..T_11 (the first includes loading Pyodide) + tennis match
+  let stepsDone = 0;
+  const loadingFills: HTMLElement[] = [];
+  function addLoading(containerId: string) {
+    const container = document.getElementById(containerId);
+    if (!container) return null;
+    const overlay = document.createElement('div');
+    overlay.className = 'plot-loading';
+    overlay.innerHTML =
+      '<span>Loading Python…</span><div class="plot-loading-track"><div class="plot-loading-fill"></div></div>';
+    container.appendChild(overlay);
+    loadingFills.push(overlay.querySelector('.plot-loading-fill') as HTMLElement);
+    return overlay;
+  }
+  function hideLoading(overlay: HTMLElement | null) {
+    if (!overlay) return;
+    overlay.classList.add('done');
+    setTimeout(() => overlay.remove(), 300);
+  }
+  function stepDone() {
+    stepsDone++;
+    const pct = Math.max(4, Math.min(100, (stepsDone / TOTAL_STEPS) * 100));
+    for (const f of loadingFills) f.style.width = `${pct}%`;
+  }
+  const loadingLeft = addLoading('tiebreaker_plot_container');
+  const loadingRight = addLoading('tiebreaker_plot_container_right');
+  const loadingTradeoff = addLoading('tradeoff_plot_container');
+
   function tickLabel(value: unknown) {
     const v = typeof value === 'string' ? Number.parseFloat(value) : Number(value);
     const r = Math.round(v * 100) / 100;
@@ -329,11 +358,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       console.log(`Precomputed T_${n}`);
       graphByN.set(n, result as number[]);
+      stepDone();
     }
     if (slider) slider.disabled = false;
+    hideLoading(loadingLeft);
 
     {
       const { result, error } = await computeGraphOrError(tennis_match);
+      stepDone();
+      hideLoading(loadingRight);
       if (error || !result) {
         console.error('Failed to compute tennis match graph:', error);
       } else {
@@ -421,6 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tradeoffChart.update();
     }
 
+    hideLoading(loadingTradeoff);
     if (xLabelTradeoff) xLabelTradeoff.innerHTML = '\\(\\mathbf{F}(M)\\)';
     if (yLabelTradeoff) yLabelTradeoff.innerHTML = '\\(\\mathbf{E}(M)\\)';
     if (unreachableLabel) unreachableLabel.innerHTML = '\\(\\text{Unreachable Zone}\\)';

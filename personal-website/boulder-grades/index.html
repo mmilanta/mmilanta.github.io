@@ -8,7 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="/src/styles.css" rel="stylesheet">
   <style>
-    mjx-container { overflow-x: auto; max-width: 100%; }
+    mjx-container[display="true"] {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      padding: 0.4em 0;
+      overscroll-behavior-x: contain;
+    }
     figure { margin: 2rem 0; }
     figure img { width: 100%; border-radius: 6px; border: 1px solid #e9ecef; }
     figcaption { text-align: center; font-size: 0.875rem; color: #6c757d; margin-top: 0.5rem; font-style: italic; }
