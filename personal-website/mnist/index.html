@@ -50,7 +50,7 @@
         <article class="font-serif text-lg leading-relaxed space-y-6">
           <section id="introduction" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">Introduction</h2>
-            <p>This project has been a personal effort of mine to fully understand the basics of deep learning. I did the project entirely without AI, as its objective was my own understanding, not the result itself. I used AI to proofread this post and to write the PyTorch implementation I used for comparison.</p>
+            <p>This project has been a personal effort of mine to fully understand the basics of deep learning. I did the project entirely without AI, as its objective was my own understanding, not the result itself. I used AI to proofread this post, to make its figures and the interactive demo, and to write the PyTorch implementation I used for comparison.</p>
             <p>The project had three parts:</p>
             <ol class="list-decimal space-y-1 pl-6">
               <li>Build a tensor data structure, also known as an n-dimensional array. Implement the generic product using Einstein notation, like <code>einsum</code> in NumPy or PyTorch.</li>
@@ -59,14 +59,10 @@
             </ol>
           </section>
 
-          <section id="experiment" class="space-y-3">
-            <h2 class="font-serif text-2xl scroll-mt-10">Try the model</h2>
-            <p>Draw a digit in the grid below to run the trained network in your browser. The bars show the probability assigned to each digit, and the most likely digit is highlighted beneath the chart.</p>
-
+          <section id="experiment" class="space-y-3 scroll-mt-10">
             <div class="mnist-demo not-prose">
               <div class="demo-copy">
-                <h3 class="font-serif text-xl">What do you see?</h3>
-                <p class="font-serif text-base text-gray-600">Click and drag across the pixels to draw. The network reads the canvas continuously.</p>
+                <p class="font-serif text-2xl text-gray-600">Try the model: draw a digit</p>
               </div>
               <div class="demo-layout">
                 <div class="canvas-column">
@@ -78,7 +74,6 @@
                     <div><span class="prediction-caption">Prediction</span><h4 id="prediction-label">—</h4></div>
                   </div>
                   <div class="chart-wrap"><canvas id="prediction-chart" aria-label="Real time prediction probabilities"></canvas></div>
-                  <p class="model-note">A 784 → 256 → 10 multilayer perceptron.</p>
                 </div>
               </div>
             </div>
