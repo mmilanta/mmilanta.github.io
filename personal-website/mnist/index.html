@@ -51,6 +51,7 @@
           <section id="introduction" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">Introduction</h2>
             <p>This project has been a personal effort of mine to fully understand the basics of deep learning. I did the project entirely without AI, as its objective was my own understanding, not the result itself. I used AI to proofread this post and to write the PyTorch implementation I used for comparison.</p>
+            <p>The project had three parts:</p>
             <ol class="list-decimal space-y-1 pl-6">
               <li>Build a tensor data structure, also known as an n-dimensional array. Implement the generic product using Einstein notation, like <code>einsum</code> in NumPy or PyTorch.</li>
               <li>Build automatic differentiation on top of these tensors.</li>
@@ -100,16 +101,16 @@ $$</p>
             <p>$$
 \text{Loss}(M(x, \theta), y)
 $$</p>
-            <p>is also differentiable. Thus I can compute the gradient of the loss with respect to the parameters of $M$. Then we can update the parameters using that gradient</p>
+            <p>is also differentiable. Thus I can compute the gradient of the loss with respect to the parameters of $M$. Then I update the parameters using that gradient:</p>
             <p>$$
 \theta \leftarrow \theta - \eta \nabla_\theta \text{Loss}(M(x, \theta), y).
 $$</p>
-            <p>Automatic differentiation allows us to compute such gradients efficiently. The way it works here is that it keeps track of intermediate values during the computation of $M(x, \theta)$. And it keeps track of partial derivatives of each intermediate value with respect to its inputs. Then, when the loss is computed, the algorithm travels back through the graph and uses the chain rule to compute the gradient of the loss with respect to each intermediate value.</p>
+            <p>Automatic differentiation computes such gradients efficiently. The way it works here is that it keeps track of intermediate values during the computation of $M(x, \theta)$. And it keeps track of partial derivatives of each intermediate value with respect to its inputs. Then, when the loss is computed, the algorithm travels back through the graph and uses the chain rule to compute the gradient of the loss with respect to each intermediate value.</p>
           </section>
 
           <section id="mnist-classifier" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">MNIST classifier</h2>
-            <p>Finally, I used all of this to build a handwritten digit classifier using the famous MNIST dataset. The model I trained is very simple</p>
+            <p>Finally, I used all of this to build a handwritten digit classifier using the famous MNIST dataset. The model I trained is very simple:</p>
             <p>$$
 \begin{aligned}
 H_{bh} &amp;= \operatorname{ReLU}\!\left(\bigl[X_{bp},\,(W_1)_{ph}\bigr]_{bh}\right),\\
@@ -127,7 +128,7 @@ $$</p>
 
           <section id="comparison" class="space-y-3">
             <h2 class="font-serif text-2xl scroll-mt-10">Comparison with PyTorch and AI</h2>
-            <p>For the sake of humiliation, I asked GPT-6-sol to implement the same thing from scratch using PyTorch. It took no more than a few minutes to write, and training ran about 10,000 times faster. A single epoch took 2.93 seconds instead of 8 hours and 40 minutes.</p>
+            <p>For the sake of humiliation, I asked GPT-6-sol to implement the same thing from scratch using PyTorch. It took no more than a few minutes to write, and training ran about 10,000 times faster. A single epoch took 2.93 seconds instead of 8 hours and 40 minutes. The gap is not surprising. PyTorch is a thin Python layer over heavily optimized C/C++ (and, on a GPU, CUDA) kernels, so the actual number crunching never runs in the Python interpreter. My implementation is written entirely in Python and it was never optimized for performance.</p>
             <p>The most surprising thing, maybe, is how much fun I had along the way. This crazy feeling of understanding each and every line of code and being in the flow for many hours straight. I hope that coding will become like horse riding. Useless, but people who really like it still do it.</p>
           </section>
         </article>
