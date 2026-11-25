@@ -1,0 +1,13 @@
+name: Publish a static VPS bundle
+description: Publish a checksummed site archive to the repository's vps-build branch.
+inputs:
+  directory:
+    description: Directory containing the static site
+    required: true
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        SITE_DIRECTORY: ${{ inputs.directory }}
+      run: bash "$GITHUB_ACTION_PATH/publish.sh" "$SITE_DIRECTORY"

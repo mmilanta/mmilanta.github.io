@@ -7,5 +7,5 @@ void Promise.all([
   document.fonts.load('400 12px "Libre Baskerville"'),
   document.fonts.load('700 12px "Libre Baskerville"'),
 ]).then(() => {
-  Object.values(Chart.instances).forEach((chart) => chart.update('none'));
+  Object.keys(Chart.instances).forEach((id) => Chart.instances[id]?.update('none'));
 });

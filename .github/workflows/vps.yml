@@ -1,0 +1,53 @@
+name: Deploy to the Hetzner VPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'personal-website/**'
+      - '.github/actions/publish-vps/**'
+      - '.github/workflows/vps.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hetzner-vps
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: personal-website/package-lock.json
+      - run: npm ci && npm run build
+        working-directory: personal-website
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vps-site
+          path: personal-website/dist/
+          if-no-files-found: error
+          retention-days: 7
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: vps-site
+          path: ${{ runner.temp }}/vps-site
+      - uses: ./.github/actions/publish-vps
+        with:
+          directory: ${{ runner.temp }}/vps-site
